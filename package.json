@@ -1,0 +1,32 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "async": "*",
+    "body-parser":"*",
+    "cheerio": "*",
+    "cookie-parser": "*",
+    "cron": "*",
+    "debug": "*",
+    "ejs": "*",
+    "express": "*",
+    "express-partials":"*",
+    "formidable":"*",
+    "gbk": "*",
+    "iconv-lite": "*",
+    "jssha": "*",
+    "lodash":"*",
+    "log4js":"*",
+    "morgan":"*",
+    "mysql":"*",
+    "pingpp":"*",
+    "request":"*",
+    "qs":"*",
+    "static-favicon":"*",
+    "when":"*"
+  }
+}

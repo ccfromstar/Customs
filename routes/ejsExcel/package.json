@@ -1,0 +1,25 @@
+{
+    "author": "sail 黄智勇",
+    "homepage": "https://git.oschina.net/ccteams/ejsExcel",
+    "bugs": {
+        "url": "https://git.oschina.net/ccteams/ejsExcel",
+        "email": "151263555@qq.com"
+    },
+    "keywords":[
+    	"ejsexcel",
+    	"ejs",
+    	"Excel",
+    	"nodejs"
+    ],
+    "name": "ejsexcel",
+    "version": "1.6.12",
+    "main": "ejsExcel",
+    "readme":"README.md",
+    "license": "MIT",
+    "description": "nodejs通过Excel模板导出Excel",
+    "repository" : {
+        "type": "git",
+        "url": "https://git.oschina.net/ccteams/ejsExcel.git"
+	},
+	"engines" : {"node": ">=0.10 <=5.5"}
+}

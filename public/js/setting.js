@@ -1,0 +1,2 @@
+var hosts = "";
+var appid = "";
