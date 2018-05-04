@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<title>上海港邮供报关系统</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<style>
+			.header {
+				text-align: center;
+			}
+			
+			.header h1 {
+				font-size: 200%;
+				color: #333;
+				margin-top: 10px;
+			}
+			
+			.header p {
+				font-size: 14px;
+			}
+		</style>
+		<script type="text/javascript">
+			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
+			$(function() {
+				/*检测是否记住用户名密码*/
+			      var remember = window.localStorage.getItem('remember-me1');
+			      if(remember){
+			        $('#username').val(window.localStorage.getItem('uname1'));
+			        $('#password').val(window.localStorage.getItem('pwd1'));
+			        $('#remember-me').attr('checked','checked');
+			      }
+			});
+			      
+			function login1(){
+				var username = $("#username").val();
+				var password = $("#password").val();
+				var company = $("#company").val();
+				if(username == ""){
+					alert("用户名不能为空！");return false;
+				}
+				if(password == ""){
+					alert("密码不能为空！");return false;
+				}
+				$.ajax({
+					type: "post",
+					url: "/service/checkTUser",
+					data: {
+						username: username,
+						password:password,
+						company:company
+					},
+					success: function(data) {
+						if(data == "400"){
+							alert("用户名或密码错误！");return false;
+						}
+						sessionStorage.username = data.username;
+						sessionStorage.company = data.company;
+						sessionStorage.authorize = 1;
+						if(jqchk('remember-me') == "on"){
+				          window.localStorage.setItem("uname1",username);
+				          window.localStorage.setItem('pwd1',password);
+				          window.localStorage.setItem("remember-me1",true);
+				        }else{
+				          window.localStorage.removeItem("uname1");
+				          window.localStorage.removeItem('pwd1');
+				          window.localStorage.removeItem("remember-me1");
+				        }
+				        if(data.company == '邮轮港公司'){
+				        	window.location = 'ylg_import.html';
+				        }						
+					}
+				});
+			}
+
+			function jqchk(name){ //jquery获取复选框值
+		        var chk_value = '';
+		        $('input[name="' + name + '"]:checked').each(function ()
+		        {
+		            if (chk_value == "")
+		            {
+		                chk_value = $(this).val();
+		            }
+		            else
+		            {
+		                chk_value = chk_value + "*" + $(this).val();
+		            }
+		        }
+		        );
+		        return chk_value;
+		    }
+		</script>
+	</head>
+
+	<body>
+		<div class="header">
+			<div class="am-g">
+				<br/><br/>
+				<img src="../framework/logo.png" style="width:200px">
+				<h1>上海港邮供报关系统</h1>
+				<p>Post declaration system for Shanghai port
+					<br/></p>
+			</div>
+			<hr />
+		</div>
+		<div class="am-g">
+			<div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
+				<h3>登录</h3>
+				<hr>
+				<form method="post" class="am-form">
+					<label for="company">用户单位:</label>
+					<select id="company" data-am-selected>
+					  <option value="邮轮港公司">邮轮港公司</option>
+					  <option value="海关">海关</option>
+					  <option value="其他报关单位">其他报关单位</option>
+					</select>
+					<br>
+					<label for="username">用户名:</label>
+					<input type="text" name="" id="username" value="">
+					<br>
+					<label for="password">密码:</label>
+					<input type="password" name="" id="password" value="">
+					<br>
+					<label for="remember-me">
+						<input id="remember-me" name="remember-me" type="checkbox" > 记住密码</input>
+					</label>
+					<br />
+					<br/>
+					<div class="am-cf">
+						<input type="button" id="login" onclick="login1()" name="" value="登 录" class="am-btn am-btn-primary am-btn-sm am-fl">
+					</div>
+				</form>
+				<hr>
+				<p>© 2018 上海滨港信息技术有限公司提供技术支持.</p>
+			</div>
+		</div>
+	</body>
+</html>

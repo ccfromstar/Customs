@@ -27,6 +27,7 @@
     "request":"*",
     "qs":"*",
     "static-favicon":"*",
-    "when":"*"
+    "when":"*",
+    "node-xlsx":"*"
   }
 }

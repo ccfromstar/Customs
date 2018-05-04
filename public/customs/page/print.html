@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>上海港邮轮登船凭证管理系统(SCSPMS)</title>
+
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+
+		<link rel="stylesheet" href="../framework/css/admin.css">
+		<script src="../framework/JsBarcode.all.js"></script>
+		<script type="text/javascript">
+			function doPrint() {      
+			        bdhtml=window.document.body.innerHTML;      
+			        sprnstr="<!--startprint-->";      
+			        eprnstr="<!--endprint-->";      
+			        prnhtml=bdhtml.substr(bdhtml.indexOf(sprnstr)+17);      
+			        prnhtml=prnhtml.substring(0,prnhtml.indexOf(eprnstr));      
+			        window.document.body.innerHTML=prnhtml;   
+			        window.print();      
+			}      
+		</script>
+	</head>
+
+	<body>
+		<!--
+		<p>
+			<button type='button' onclick='doPrint()' style='margin-left:20px;margin-top: 20px;' class='am-btn am-btn-default am-text-success'><span class='am-icon-print'></span> 打印</button>
+		</p>-->
+		<!--startprint-->
+		<img src="../framework/costa.png" style="width:720px" >
+		<!--endprint-->  
+		<!--数据区域-->
+		<div id="ticket_date">
+			<img src="../framework/Coata.png" style="position:fixed;top:20px;left:60px;width:170px">
+			<div style="font-weight:bolder;position:fixed;top:171px;left:120px;font-size: 20px">团队</div>
+			<div>
+				<img id="barcode1" style="position:fixed;top:178px;left:315px" />
+				<script>JsBarcode("#barcode1", "0057904249",{
+					format: "CODE128",
+					width:2,//设置条之间的宽度
+		  			height:32,//高度
+				});</script>
+			</div>
+			<div style="font-weight:bolder;position:fixed;top:305px;left:120px;font-size: 14px;line-height: 1">歌诗达邮轮集团<br/>Costa Crociere S.p.A</div>
+			<div style="font-weight:bolder;position:fixed;top:340px;left:120px;font-size: 18px;line-height: 1">幸运号<br/>Costa Fortuna</div>
+			<div style="font-weight:bolder;position:fixed;top:405px;left:120px;font-size: 18px;">FU20171221</div>
+			<div style="font-weight:bolder;position:fixed;top:450px;left:120px;font-size: 18px;">2017.12.21</div>
+			<div style="font-weight:bolder;position:fixed;top:495px;left:120px;font-size: 18px;">香港国际邮轮港</div>
+			<div style="font-weight:bolder;position:fixed;top:515px;left:120px;font-size: 14px;">Wusongkou ICT</div>
+			<div style="font-weight:bolder;position:fixed;top:545px;left:120px;font-size: 14px;">2017.12.18 上海 Shanghai<br/>2017.12.20 长崎 Nagasaki<br/>2017.12.22 上海 Shanghai</div>
+
+			<div style="font-weight:bolder;position:fixed;top:305px;left:460px;font-size: 18px">21774883</div>
+			<div style="font-weight:bolder;position:fixed;top:340px;left:460px;font-size: 28px">6</div>
+			<div style="font-weight:bolder;position:fixed;top:390px;left:460px;font-size: 28px">6247</div>
+			<div style="font-weight:bolder;position:fixed;top:442px;left:642px;font-size: 28px;color:#fff">A</div>
+
+			<div style="font-weight:bolder;position:fixed;top:710px;left:120px;font-size: 18px;line-height: 1">容国珍<br/>Rong Guozhen</div>
+			<div style="font-weight:bolder;position:fixed;top:765px;left:120px;font-size: 18px;">CHN</div>
+			<div style="font-weight:bolder;position:fixed;top:810px;left:120px;font-size: 18px;">EA4500623</div>
+			<div style="font-weight:bolder;position:fixed;top:855px;left:120px;font-size: 18px;">310***19501210****</div>
+			<div style="font-weight:bolder;position:fixed;top:900px;left:120px;font-size: 18px;">138********</div>
+		</div>
+	</body>
+
+</html>

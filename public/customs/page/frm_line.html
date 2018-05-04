@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>上海港邮轮登船凭证管理系统(SCSPMS)</title>
+
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+
+		<link rel="stylesheet" href="../framework/css/admin.css">
+
+		<script src="../framework/amazeui/amazeui.min.js"></script>
+
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<script src="../framework/main.js"></script>
+		<script type="text/javascript">
+			$(function(){
+				$.ajax({
+					type: "post",
+					url: "/service/getLine",
+					data: {
+						cruiseCompany:sessionStorage.company
+					},
+					success: function(data) {
+						console.log(data);
+					}
+				});
+			});
+		</script>
+	</head>
+
+	<body>
+		<div>
+			<header class="am-topbar am-topbar-inverse admin-header">
+				<div class="am-topbar-brand">
+					<strong>上海港邮轮登船凭证管理系统</strong> <small>(SCSPMS)</small>
+				</div>
+
+				<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+				<div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+					<ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+						<li><a href="javascript:;"><span class="am-icon-user"></span> 当前用户 <span id="cname"></span></a></li>
+						<li><a href="#" onclick="exit()"><span class="am-icon-power-off"></span> 退出</a></li>
+					</ul>
+				</div>
+			</header>
+			<div class="am-cf admin-main">
+				<!-- sidebar start -->
+				<div class="admin-sidebar am-offcanvas" id="admin-offcanvas">
+					<div class="am-offcanvas-bar admin-offcanvas-bar">
+						<ul class="am-list admin-sidebar-list">
+							<li><a href="import.html"><span class="am-icon-pencil-square-o"></span> 游客信息导入</a></li>
+							<li><a href="query.html"><span class="am-icon-pencil-square-o"></span> 游客信息查询</a></li>
+							<li><a href="line.html"><span class="am-icon-pencil-square-o"></span> 航班信息维护</a></li>
+						</ul>
+					</div>
+				</div>
+				<!-- sidebar end -->
+				<!-- content start -->
+				<div class="admin-content" ng-controller="AdminController">
+					<div class="admin-content-body">
+						<div class="am-cf am-padding">
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">航班信息维护</strong> / <small>表单</small></div>
+						</div>
+						<div class="am-form bg-form">
+							<div class="am-g am-margin-top">
+								<table class="am-table am-table-bordered" style="width:600px;margin-left:20px;">
+									<tr>
+										<td>承运人</td>
+										<td>
+											<select style="margin-left:9px;display:inline;width:300px;">
+												<option>歌诗达邮轮集团</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>船名</td>
+										<td>
+											<select style="margin-left:9px;display:inline;width:200px;">
+												<option>赛琳娜号</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>船名英文名</td>
+										<td>
+											<input type="" name="" value="Costa Serena" class="am-input-sm" style="border: none" readonly="readonly" >
+										</td>
+									</tr>
+									<tr>
+										<td>航班号</td>
+										<td>
+											<input type="" name="" class="am-input-sm" >
+										</td>
+									</tr>
+									<tr>
+										<td>启航日期</td>
+										<td>
+											<input type="text" class="am-form-field" placeholder="日历组件" data-am-datepicker readonly />
+										</td>
+									</tr>
+									<tr>
+										<td>始发港</td>
+										<td>
+											<select style="margin-left:9px;display:inline;width:300px;">
+												<option>吴淞口国际邮轮港</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>航线</td>
+										<td>
+											<textarea style="margin-left:9px;width:95%;height: 100px" class="am-input-sm" placeholder="格式：2017.12.5 上海 SHANGHAI (一行一个目的地)"></textarea>
+										</td>
+									</tr>
+								</table>
+							</div>
+							
+						</div>
+
+						<div class="am-margin">
+							<button type="button" onclick="saveForm('news')" class="btn-c am-btn am-btn-primary am-btn-xs">确定</button>
+							<button type="button" onclick="history.go('-1');" class="btn-c am-btn am-btn-primary am-btn-xs">关闭</button>
+						</div>
+					</div>
+				</div>
+				<!-- content end -->
+			</div>
+		</div>
+
+	</body>
+
+</html>
