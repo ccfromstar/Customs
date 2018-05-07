@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="utf-8">
-		<title>上海港邮轮登船凭证管理系统(SCSPMS)</title>
+		<title>上海港邮供报关系统</title>
 
 		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
 
@@ -18,13 +18,24 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				
+				$.ajax({
+					type: "post",
+					url: "/service/getNumber",
+					success: function(data) {
+						var l = '';
+						for(var i in data){
+							l = l + '<option value="'+data[i].input_number+'">'+data[i].input_number+'</option>';
+						}
+						$("#roomNo").html(l);
+					}
+				});
 			});
 
 			var lineId = '';
 
 			var idlist = '';
 			var namelist = '';
+
 			var _timestamp = '';
 
 			function refreshPage(){
@@ -34,106 +45,90 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getVistor",
+					url: "/service/getXVistor",
 					data: {
-						companyId:sessionStorage.companyId,
+						companyId:sessionStorage.company,
 						startDate:$("#startDate").val(),
 						teamNo:$("#teamNo").val(),
 						uname:$("#uname").val()
 					},
 					success: function(data) {
 						$modal.modal('toggle');
-						var arr = data.split("|");
-						$("#total").html(arr[0]);
-						var arr1 = arr[1].split("@");
-						var arr2 = arr[2].split("@");
-						var arr3 = arr[3].split("@");
-						var arr4 = arr[4].split("@");
-						var arr5 = arr[5].split("@");
-						var arr6 = arr[6].split("@");
-						var arr7 = arr[7].split("@");
-						var arr8 = arr[8].split("@");
-						var arr9 = arr[9].split("@");
+						var count = 0;
 						var json_tbody = '';
-						for(var i=1;i<arr1.length;i++){
+						for(var i in data){
 							json_tbody += '<tr>';
-							json_tbody += '<td><input type="checkbox" name="idlist" value="'+arr9[i]+'*'+arr2[i]+'-'+arr3[i]+'"></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td>'+arr5[i]+'</td>';
-							json_tbody += '<td>'+arr2[i]+'</td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td>'+arr1[i]+'</td>';
-							json_tbody += '<td>'+arr3[i]+'</td>';
-							json_tbody += '<td>'+arr4[i]+'</td>';
-							json_tbody += '<td>'+arr6[i]+'</td>';
-							json_tbody += '<td>'+arr7[i]+'</td>';
-							json_tbody += '<td>'+arr8[i]+'</td>';
-							//json_tbody += '<td>'+arr9[i]+'</td>';
+							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].ticket_code+'</td>';
+							json_tbody += '<td>'+data[i].booking_no+'</td>';
+							//json_tbody += '<td></td>';
+							json_tbody += '<td>'+data[i].termNo+'</td>';
+							json_tbody += '<td>'+data[i].cabin_num+'</td>';
+							//json_tbody += '<td></td>';
+							json_tbody += '<td>'+data[i].name+'</td>';
+							json_tbody += '<td>'+data[i].nameEn+'</td>';
+							json_tbody += '<td>'+data[i].nationality+'</td>';
+							json_tbody += '<td>'+data[i].passport_no+'</td>';
+							json_tbody += '<td>'+data[i].id_no+'</td>';
+							json_tbody += '<td>'+data[i].mobile+'</td>';
 							json_tbody += '</tr>';
+							count +=1;
 						}
+						$("#total").html(count);
 						$("#json_tbody").html(json_tbody);
-						//idlist = (arr[9]);
-						//namelist = arr[3];
 					}
 				});
 			}
 
 			function search(){
-				if($("#startDate").val() == ""){
-					alert("出发日期必选");return false;
-				}
-				$('#ticketlist').html("数据检索中...");
+				$('#ticketlist').html("数据加载中...");
 				var $modal = $('#doc-modal-1');
 				$modal.modal('toggle');
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getVistor",
+					url: "/service/getXVistor",
 					data: {
-						companyId:sessionStorage.companyId,
-						startDate:$("#startDate").val(),
-						teamNo:$("#teamNo").val(),
-						teamNo1:$("#teamNo1").val(),
-						uname:$("#uname").val()
+						startDate:'',
+						teamNo:'',
+						roomNo:$("#roomNo").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
-						$modal.modal('toggle');
-						var arr = data.split("|");
-						$("#total").html(arr[0]);
-						var arr1 = arr[1].split("@");
-						var arr2 = arr[2].split("@");
-						var arr3 = arr[3].split("@");
-						var arr4 = arr[4].split("@");
-						var arr5 = arr[5].split("@");
-						var arr6 = arr[6].split("@");
-						var arr7 = arr[7].split("@");
-						var arr8 = arr[8].split("@");
-						var arr9 = arr[9].split("@");
 						var json_tbody = '';
-						for(var i=1;i<arr1.length;i++){
+						$modal.modal('toggle');
+						var count = 0;
+						for(var i in data){
 							json_tbody += '<tr>';
-							json_tbody += '<td><input type="checkbox" name="idlist" value="'+arr9[i]+'*'+arr2[i]+'-'+arr3[i]+'"></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td>'+arr5[i]+'</td>';
-							json_tbody += '<td>'+arr2[i]+'</td>';
-							json_tbody += '<td></td>';
-							json_tbody += '<td>'+arr1[i]+'</td>';
-							json_tbody += '<td>'+arr3[i]+'</td>';
-							json_tbody += '<td>'+arr4[i]+'</td>';
-							json_tbody += '<td>'+arr6[i]+'</td>';
-							json_tbody += '<td>'+arr7[i]+'</td>';
-							json_tbody += '<td>'+arr8[i]+'</td>';
-							//json_tbody += '<td>'+arr9[i]+'</td>';
+							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].no+'</td>';
+							json_tbody += '<td>'+data[i].name+'</td>';
+							json_tbody += '<td>'+data[i].nameEn+'</td>';
+							json_tbody += '<td>'+data[i].unit+'</td>';
+							json_tbody += '<td>'+data[i].price+'</td>';
+							json_tbody += '<td>'+data[i].empolyeeName+'</td>';
+							json_tbody += '<td>'+data[i].carNo+'</td>';
+							json_tbody += '<td>'+data[i].input_number+'</td>';
+							json_tbody += '<td>'+data[i].state+'</td>';
 							json_tbody += '</tr>';
+							count +=1;
 						}
+						$("#total").html(count);
 						$("#json_tbody").html(json_tbody);
-						//idlist = (arr[9]);
-						//namelist = arr[3];
+					}
+				});
+				$.ajax({
+					type: "post",
+					url: "/service/getFJ",
+					data: {
+						roomNo:$("#roomNo").val()
+					},
+					success: function(data) {
+						var img = '';
+						for(var i in data){
+							img = img + '<img style="width:100%;margin-top:5px" src="/upload/'+data[i].name+'"  class="am-img-thumbnail">';
+						}
+						$("#attachement").html(img);
 					}
 				});
 			}
@@ -176,6 +171,32 @@
 			      );
 			      return chk_value;
 			  }
+
+			function ApproveDoc(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk1("idlist"));
+				//alert(result);
+				if(result==""){
+					alert("您没有选择");
+					return false;
+				}
+
+				
+				$.ajax({
+					type: "post",
+					url: "/service/ApproveDoc",
+					data: {
+						idlist:result
+					},
+					success: function(data) {
+						alert("审核成功！");	
+						search();
+					}
+				});
+			}
 
 			function createTicket(){
 				var arrL = idlist.split("@");
@@ -243,7 +264,7 @@
 						},
 						success: function(data) {
 							_timestamp = timestamp;
-							tlist = "船票已生成完毕！<br/>请点击<a target='blank' href='http://47.75.68.234/static/zip/"+timestamp+".zip'>船票.zip</a>下载";
+							tlist = "船票已生成完毕！<br/>请点击<a target='blank' href='http://47.98.123.67/static/zip/"+timestamp+".zip'>船票.zip</a>下载";
 							tlist = tlist+"<div>您也可以发送邮件到指定的邮箱<br/>邮箱地址：<input id='mailaddress' /><br/>邮件主题：<input id='mailtitle' value='船票下载' /><br/><button type='button' onclick='sendMail()' class='btn-c am-btn-xs am-btn-primary am-btn'>发送</button></div>";
 							$('#ticketlist').html(tlist);
 						}
@@ -253,7 +274,7 @@
 				//console.log(iaa1[cott]);
 				$.ajax({
 					type: "post",
-					url: "/service/createTicket",
+					url: "/service/createTicketXls",
 					data: {
 						idlist:iaa1[cott],
 						namelist:iaa2[cott],
@@ -317,7 +338,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">游客信息查询（来源：口岸）</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关数据审核</strong> / <small>列表</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -347,34 +368,33 @@
 					      </div>-->
 
 					      <div style="margin-left:30px">
-					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="出发日期" data-am-datepicker readonly />
-					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="团号(模糊)" >
-					      	<input type="" id="teamNo1" class="am-form-field" style="width:120px;display: inline-block;" placeholder="团号(精确)" >
-					      	<input type="" id="uname" class="am-form-field" style="width:120px;display: inline-block;" placeholder="姓名" >
+					      	<!--<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
+					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
+					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >-->
+					      	<select style="height:38px" id="roomNo">
+					      		<option value="-">录入编号</option>
+					      	</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
-					      	<button type="button" onclick="createTicket()" class="btn-c am-btn am-btn-default am-btn">生成船票</button>
+					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-default am-btn">批量审核</button>
 					      </div>
 
 
 							<div class="am-g">
-								<div class="am-u-sm-12">
+								<div class="am-u-sm-6">
 									<form class="am-form">
 										<table class="am-table am-table-striped am-table-hover table-main jdt-table">
 											<thead>
 												<tr>
 													<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>
-													<th>船票认证码</th>
-													<th>预定编号</th>
-													<th>船舱楼层</th>
-													<th>团号</th>
-													<th>房间号码</th>
-													<th>逃生集合区</th>
-													<th>姓名</th>
-													<th>英文姓名</th>
-													<th>国籍</th>
-													<th>护照号</th>
-													<th>身份证号</th>
-													<th>联系电话</th>
+													<th>序号</th>
+													<th>商品名称</th>
+													<th>商品英文名</th>
+													<th>重量（KG）</th>
+													<th>金额（RMB）</th>
+													<th>供应商全名</th>
+													<th>载运车辆牌号</th>
+													<th>录入编号</th>
+													<th>状态</th>
 												</tr>
 											</thead>
 											<tbody id="json_tbody">
@@ -390,6 +410,9 @@
 											</div>
 										</div>
 									</form>
+								</div>
+								<div id="attachement" style="height: 700px;overflow: auto" class="am-u-sm-6">
+
 								</div>
 							</div>
 							<div class="am-modal am-modal-confirm" tabindex="-1" id="del-confirm">
@@ -416,7 +439,7 @@
 		<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="doc-modal-1">
 		  <div class="am-modal-dialog">
 		    <div class="am-modal-hd">提示信息
-		    	<a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
 		    </div>
 		    <div id="ticketlist" class="am-modal-bd">
 		        

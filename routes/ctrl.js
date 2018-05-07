@@ -11,4 +11,7 @@ module.exports = function (app, routes) {
     app.get('/_uploadsuccess',routes._uploadsuccess);
     app.post('/_uploaddo',routes._uploaddo);
 
+    app.post('/customs/page/uploaddo2',routes.uploaddo2);
+    
+
 };

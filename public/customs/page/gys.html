@@ -18,7 +18,7 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				
+				search();
 			});
 
 			var lineId = '';
@@ -92,7 +92,7 @@
 							json_tbody += '<tr>';
 							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
 							json_tbody += '<td>'+data[i].name+'</td>';
-							json_tbody += '<td><image style="height:200px" src="/upload/'+data[i].image+'"></image></td>';
+							json_tbody += '<td><image style="height:100px" src="/upload/'+data[i].image+'"></image></td>';
 							json_tbody += '<td>'+data[i].state+'</td>';
 							json_tbody += '</tr>';
 							count +=1;

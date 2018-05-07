@@ -73,6 +73,8 @@
 				        }
 				        if(data.company == '邮轮港公司'){
 				        	window.location = 'ylg_import.html';
+				        }else{
+				        	window.location = 'query.html';
 				        }						
 					}
 				});
@@ -93,6 +95,10 @@
 		        }
 		        );
 		        return chk_value;
+		    }
+
+		    function reg1(){ 
+		        window.location = 'reg.html';
 		    }
 		</script>
 	</head>
@@ -117,7 +123,6 @@
 					<select id="company" data-am-selected>
 					  <option value="邮轮港公司">邮轮港公司</option>
 					  <option value="海关">海关</option>
-					  <option value="其他报关单位">其他报关单位</option>
 					</select>
 					<br>
 					<label for="username">用户名:</label>
@@ -131,12 +136,11 @@
 					</label>
 					<br />
 					<br/>
-					<div class="am-cf">
-						<input type="button" id="login" onclick="login1()" name="" value="登 录" class="am-btn am-btn-primary am-btn-sm am-fl">
-					</div>
+					<button type="button" id="login" onclick="login1()" class="am-btn am-btn-default">登 录</button>
+					<button type="button" onclick="reg1()" class="am-btn am-btn-primary">供应商注册</button>
 				</form>
 				<hr>
-				<p>© 2018 上海滨港信息技术有限公司提供技术支持.</p>
+				<p>© 2018 上海邮轮中心提供技术支持.</p>
 			</div>
 		</div>
 	</body>

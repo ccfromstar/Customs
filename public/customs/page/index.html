@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>司机端</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<script src="../framework/amazeui/amazeui.min.js"></script>
+
+		<script src="../framework/main.js"></script>
+
+		<link rel="stylesheet" href="../framework/css/admin.css">
+
+		<style>
+			.am-alert{
+				position: fixed;
+				top:0;
+				left:0;
+				z-index:9999;
+				margin-top:0 !important;
+				width:100%;
+			}
+			.none{
+				display: none;
+			}
+		</style>
+	</head>
+	<body class="am-with-fixed-navbar">
+		<!-- Header -->
+		<header data-am-widget="header" class="am-header am-header-default am-no-layout am-header-fixed">
+			<h1 class="am-header-title">
+    			<a href="#title-link">通关二维码生成</a>
+  			</h1>
+		</header>
+
+		<form class="am-form">
+		  <fieldset>
+				<div class="am-form-group">
+					<input type="text" class="" id="carNo" placeholder="车牌号">
+				</div>
+
+				<button type="button" class="am-btn am-btn-default" onclick="sumbitDoc()">生成</button>
+		  </fieldset>
+		</form>
+		<div style="margin-left:10px" id="code"></div>
+		<div class="am-alert am-alert-success none successinfo" data-am-alert>
+		</div>
+		<script>
+			function sumbitDoc(){
+				$.ajax({
+					type: "post",
+					url: "/service/getCode",
+					data: {
+						carNo:$("#carNo").val()
+					},
+					success: function(data) {
+						if(data == ""){
+							alert("没有查找到信息！");return false;
+						}
+						$("#code").qrcode({
+							render: "table", //table方式
+							width: 150, //宽度
+							height: 150, //高度
+							text: data[0].input_number+"@"+$("#carNo").val() //任意内容
+						});
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

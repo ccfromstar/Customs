@@ -376,7 +376,24 @@ exports.servicedo = function(req,res){
 		var startDate = req.param("startDate");
 		var teamNo = req.param("teamNo");
 		var roomNo = req.param("roomNo");
-		var sql = "select * from input_customs where curiseName like '%"+teamNo+"%' and input_number like '%"+roomNo+"%'  and startDate = '"+startDate+"'";
+		var sql = "select * from input_customs where curiseName like '%"+teamNo+"%' and input_number like '%"+roomNo+"%'  and startDate like '%"+startDate+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
+	}else if(sql == "getFJ"){
+		var roomNo = req.param("roomNo");
+		var sql = "select * from input_files where input_number like '%"+roomNo+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
+	}else if(sql == "getNumber"){
+		var sql = "select DISTINCT(input_number) from input_customs where state ='待审核'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -433,6 +450,37 @@ exports.servicedo = function(req,res){
 			});
 		}
 		res.send("200");
+		
+	}else if(sql == "ApproveDoc"){
+		var idlist = req.param("idlist");
+		var arr1 = idlist.split("*");
+		for(var i=0;i<arr1.length;i++){
+			var sql = "update input_customs set state='海关已审核' where id = "+arr1[i];
+			mysql.query(sql, function(err2, result2) {
+				if(err2) return console.error(err2.stack);
+			});
+		}
+		res.send("200");
+		
+	}else if(sql == "ApproveDoc1"){
+		var idlist = req.param("idlist");
+		var arr1 = idlist.split("*");
+		for(var i=0;i<arr1.length;i++){
+			var sql = "update input_customs set state='邮轮港已审核' where id = "+arr1[i];
+			mysql.query(sql, function(err2, result2) {
+				if(err2) return console.error(err2.stack);
+			});
+		}
+		res.send("200");
+		
+	}else if(sql == "getCode"){
+		var carNo = req.param("carNo");
+		var sql = "select DISTINCT(input_number) from input_customs where carNo = '"+carNo+"'";
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
 		
 	}else if(sql == "updateLine"){
 		var descr = req.param("descr");
@@ -619,13 +667,23 @@ exports._uploaddo = function(req, res) {
 	res.redirect("_uploadsuccess?p=" + namelist);
 };
 
+exports.uploaddo2 = function(req, res) {
+	var username = req.body.username;
+	var fname = req.files.img_url.path.replace("public\\upload\\", "").replace("public/upload/", "");
+	var sql = "insert into apply(name,image,state) values('"+username+"','"+fname+"','待审核')";
+	mysql.query(sql, function(err, result) {
+		if(err) return console.error(err.stack);
+		res.redirect("/customs/page/regsuccess.html");
+	});	
+};
+
 exports.uploaddo = function(req, res) {
 	var fname = req.files.img_url.path.replace("public\\upload\\", "").replace("public/upload/", "");
 	var startDate = req.body.startDate;
 	var curiseName = req.body.curiseName;
 	var input_number = req.body.input_number;
 	/*解析数据生成记录*/
-	var sql1 = "select name from apply where state =''已审核";
+	var sql1 = "select name from apply where state ='已审核'";
 	mysql.query(sql1, function(err, result1) {
 		if(err) return console.error(err.stack);
 		var gyslist = '';
@@ -645,7 +703,8 @@ exports.uploaddo = function(req, res) {
 			    	for(var j in value){
 				        arr.push(value[j]);
 				    }
-				   	if(gyslist.indexOf(arr[5])!=-1){
+				    //console.log(gyslist.indexOf(arr[5]));
+				   	if(gyslist.indexOf(arr[5])==-1){
 				   		res.redirect("uploadfail?p=" + arr[5]);
 				   		return false;
 				   	}

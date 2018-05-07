@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<title>上海港邮供报关系统</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<style>
+			.header {
+				text-align: center;
+			}
+			
+			.header h1 {
+				font-size: 200%;
+				color: #333;
+				margin-top: 10px;
+			}
+			
+			.header p {
+				font-size: 14px;
+			}
+		</style>
+		<script type="text/javascript">
+			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
+			$(function() {
+				/*检测是否记住用户名密码*/
+			     
+			});
+			      
+			function reg1(){
+				if(document.all.img_url.value == ""){
+		    		alert("请选择您要上传的文件");return false;
+		    	}
+		    	document.forms[0].submit();
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="header">
+			<div class="am-g">
+				<br/><br/>
+				<img src="../framework/logo.png" style="width:200px">
+				<h1>供应商注册</h1>
+			</div>
+			<hr />
+		</div>
+		<div class="am-g">
+			<div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
+				<h3>注册</h3>
+				<hr>
+				<form enctype="multipart/form-data" method="post" action="uploaddo2" class="am-form">
+					<br>
+					<label for="username">单位名称</label>
+					<input type="text" name="username" id="username" value="">
+					<br>
+					<table>
+						<tr>
+							<td><input type="file" accept="image/*" name="img_url" ></td>
+						</tr>
+					</table>
+					<br />
+					<br/>
+					<button type="button" onclick="reg1()" class="am-btn am-btn-primary">确认</button>
+				</form>
+				<hr>
+				<p>© 2018 上海邮轮中心提供技术支持.</p>
+			</div>
+		</div>
+	</body>
+</html>
