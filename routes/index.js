@@ -689,7 +689,7 @@ exports.uploaddo = function(req, res) {
 		var gyslist = '';
 		for(var i in result1){
 			var x = result1[i].name;
-			gyslist = (gyslist == ""?(x):(namelist+";"+x));
+			gyslist = (gyslist == ""?(x):(gyslist+";"+x));
 		}
 		//读取文件内容
 		var obj = xlsx.parse('public/upload/'+fname);
