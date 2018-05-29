@@ -18,7 +18,7 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				
+				search();
 			});
 
 			var lineId = '';
@@ -70,6 +70,17 @@
 				});
 			}
 
+			function closeDoc(){
+				var $modal = $('#doc-modal-2');
+				$modal.modal('close');
+			}
+
+			function npass(id) {
+				g_id = id;
+				var $modal = $('#doc-modal-2');
+				$modal.modal('toggle');
+			}
+
 			function search(){
 				$('#ticketlist').html("数据加载中...");
 				var $modal = $('#doc-modal-1');
@@ -77,11 +88,13 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getXVistor1",
+					url: "/service/getXVistor",
 					data: {
 						startDate:$("#startDate").val(),
 						teamNo:$("#teamNo").val(),
-						roomNo:$("#roomNo").val()
+						roomNo:$("#roomNo").val(),
+						sType:$("#stype").val(),
+						s_state:'待审核'
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -90,9 +103,27 @@
 						var count = 0;
 						for(var i in data){
 							json_tbody += '<tr>';
-							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
-							json_tbody += '<td>'+data[i].input_number+'</td>';
-							json_tbody += '<td><image style="height:200px" src="/upload/'+data[i].name+'"></image></td>';
+							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							var hasBGD = data[i].hasBGD;
+							if(hasBGD == "0"){
+								hasBGD = "无报关单";
+							}else if(hasBGD == "1"){
+								hasBGD = "有报关单";
+							}else if(hasBGD == "2"){
+								hasBGD = "特殊车辆";
+							}
+							json_tbody += '<td>'+hasBGD+'</td>';
+							json_tbody += '<td>'+data[i].startDate+'</td>';
+							json_tbody += '<td>'+data[i].tools+'</td>';
+							json_tbody += '<td>'+data[i].number+'</td>';
+							json_tbody += '<td>'+data[i].ctype+'</td>';
+							json_tbody += '<td>'+data[i].numTotal+'</td>';
+							json_tbody += '<td>'+data[i].priceTotal+'</td>';
+							json_tbody += '<td>'+data[i].state+'</td>';
+							
+							json_tbody += "<td><button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-primary am-hide-sm-only' onclick='referTo(" + data[i].number  + ")'>查看明细和附件</button>";
+						    json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='HGPass(" + data[i].id + ")'>审核通过</button>";
+						    json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' onclick='npass(" + data[i].id + ")'>驳回</button></td>";
 							json_tbody += '</tr>';
 							count +=1;
 						}
@@ -100,6 +131,45 @@
 						$("#json_tbody").html(json_tbody);
 					}
 				});
+			}
+
+			function HGPass(id){
+				$.ajax({
+					type: "post",
+					url: "/service/HGPass",
+					data: {
+						id:id
+					},
+					success: function(data) {
+						alert("操作成功！");	
+						search();
+					}
+				});
+			}
+
+			function submitDoc() {
+				
+				//执行入库操作
+				$.ajax({
+					type: "POST",
+					url: "/service/HGNoPass",
+					data: {
+						remark: $('#remark').val(),
+						id: g_id
+					},
+					success: function(data) {
+						if(data == 200) {
+							alert("操作成功！");	
+							search();
+							var $modal = $('#doc-modal-2');
+							$modal.modal('close');
+						}
+					}
+				});
+			}
+
+			function referTo(n){
+				window.open('query.html?id='+n);
 			}
 
 			 function jqchk(name){ //jquery获取复选框值
@@ -156,12 +226,38 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/delTicketDoc1",
+					url: "/service/delTicketDoc",
 					data: {
 						idlist:result
 					},
 					success: function(data) {
 						alert("删除成功！");	
+						search();
+					}
+				});
+			}
+
+			function ApproveDoc(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk1("idlist"));
+				//alert(result);
+				if(result==""){
+					alert("您没有选择");
+					return false;
+				}
+
+				
+				$.ajax({
+					type: "post",
+					url: "/service/ApproveDoc1",
+					data: {
+						idlist:result
+					},
+					success: function(data) {
+						alert("审核成功！");	
 						search();
 					}
 				});
@@ -307,7 +403,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关附件查询</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">车辆进出港管理</strong> / <small>列表</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -336,39 +432,8 @@
 					        </div>
 					      </div>-->
 
-					      <div style="margin-left:30px">
-					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >
-					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
-					      	<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
-					      </div>
 
 
-							<div class="am-g">
-								<div class="am-u-sm-12">
-									<form class="am-form">
-										<table class="am-table am-table-striped am-table-hover table-main jdt-table">
-											<thead>
-												<tr>
-													<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>
-													<th>录入编号</th>
-													<th>附件</th>
-												</tr>
-											</thead>
-											<tbody id="json_tbody">
-												
-											</tbody>
-										</table>
-										<div class="am-cf">
-											共<span id="total"></span>条记录
-											<div class="am-fr">
-												<ul class="am-pagination" id="pagination">
-													
-												</ul>
-											</div>
-										</div>
-									</form>
-								</div>
-							</div>
 							<div class="am-modal am-modal-confirm" tabindex="-1" id="del-confirm">
 								<div class="am-modal-dialog">
 									<div class="am-modal-hd">提示</div>
@@ -397,6 +462,27 @@
 		    </div>
 		    <div id="ticketlist" class="am-modal-bd">
 		        
+		    </div>
+		  </div>
+		</div>
+
+		<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-2">
+		  <div class="am-modal-dialog">
+		    <div class="am-modal-hd">&nbsp;
+		      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		    </div>
+		    <div class="am-modal-bd">
+		      <table class="am-table am-table-bordered">
+							<tr>
+								<td>填写驳回意见</td>
+								<td><input type="text" id="remark" /></td>
+							</tr>
+						</table>
+						<button type="button" class="am-btn am-btn-danger" onclick="closeDoc();">关闭
+		            </button>
+						<button type="button" class="am-btn am-btn-primary" onclick="submitDoc();">
+		               提交
+		            </button>
 		    </div>
 		  </div>
 		</div>

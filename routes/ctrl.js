@@ -12,6 +12,8 @@ module.exports = function (app, routes) {
     app.post('/_uploaddo',routes._uploaddo);
 
     app.post('/customs/page/uploaddo2',routes.uploaddo2);
-    
+    app.post('/customs/page/uploaddo3',routes.uploaddo3);
+
+    app.get('/scan',routes.scan_js);
 
 };

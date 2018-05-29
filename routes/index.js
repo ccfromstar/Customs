@@ -14,6 +14,103 @@ exports.getopenid = function(req, res) {
 	
 }
 
+function sign(jsapi_ticket, nonceStr, timestamp, url) {
+	var ret = {
+		jsapi_ticket: jsapi_ticket,
+		nonceStr: nonceStr,
+		timestamp: timestamp,
+		url: url
+	};
+	var string = raw(ret);
+	jsSHA = require('jssha');
+	shaObj = new jsSHA(string, 'TEXT');
+	ret.signature = shaObj.getHash('SHA-1', 'HEX');
+
+	return ret;
+};
+
+function raw(args) {
+	var keys = Object.keys(args);
+	keys = keys.sort()
+	var newArgs = {};
+	keys.forEach(function(key) {
+		newArgs[key.toLowerCase()] = args[key];
+	});
+
+	var string = '';
+	for(var k in newArgs) {
+		string += '&' + k + '=' + newArgs[k];
+	}
+	string = string.substr(1);
+	return string;
+};
+
+exports.scan_js = function(req, res) {
+		var timestamp = parseInt(new Date().getTime() / 1000) + '';
+		var nonceStr = Math.random().toString(36).substr(2, 15);
+		var appId = "wx630bfbf8158108ec";
+		var appSecret = "5bd836ff035b8eee93609ed92c4db8ff";
+		var wx_url = "http://wsk.youlunshidai.com/scan";
+		console.log("wx_url:" + wx_url);
+		//判断access_token和jsapi_ticket是否已经获得，并且时效在2小时(7200s)以内
+		var strat_time = new Date("2018-01-01");
+		var end_time = new Date();
+		var timediff = end_time.getTime() - strat_time.getTime() //时间差的毫秒数
+			//console.log(end_time + "-->" + strat_time);
+		timediff = timediff / 1000;
+		//if(access_token == "" || jsapi_ticket == "" || Number(timediff) > 7200){
+		if(1 == 1) {
+			console.log("first access_token");
+			//1.获取access_token
+			var url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret;
+			request(url, function(err, response, body) {
+				if(!err && response.statusCode == 200) {
+					console.log("body:" + body);
+					var o = JSON.parse(body);
+					access_token = o.access_token;
+					console.log("access_token:" + access_token);
+					//2.获取jsapi_ticket
+					var url_jsapi = 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=' + access_token + '&type=jsapi';
+					request(url_jsapi, function(err_jsapi, response_jsapi, body_jsapi) {
+						if(!err_jsapi && response_jsapi.statusCode == 200) {
+							console.log("body_jsapi:" + body_jsapi);
+							jsapi_ticket = (JSON.parse(body_jsapi)).ticket;
+							console.log("jsapi_ticket:" + jsapi_ticket);
+							strat_time = new Date();
+							var signature = sign(jsapi_ticket, nonceStr, timestamp, wx_url);
+							//var url_info = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='+access_token+'&openid=oEDF2xBoerpEFGh3brZPkWfVRZZg&lang=zh_CN';
+							var url_info = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=' + access_token + '&next_openid=';
+							request(url_info, function(err_info, response_info, body_info) {
+								if(!err_info && response_info.statusCode == 200) {
+
+									res.render('scan', {
+										signature: signature,
+										jsapi_ticket: jsapi_ticket,
+										body_info: body_info
+									});
+								}
+							});
+						}
+					});
+				}
+			});
+		} else {
+			console.log("not first access_token");
+			var signature = sign(jsapi_ticket, nonceStr, timestamp, wx_url);
+			//var url_info = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token='+access_token+'&openid=oEDF2xBoerpEFGh3brZPkWfVRZZg&lang=zh_CN';
+			var url_info = 'https://api.weixin.qq.com/cgi-bin/user/get?access_token=' + access_token + '&next_openid=';
+			request(url_info, function(err_info, response_info, body_info) {
+				if(!err_info && response_info.statusCode == 200) {
+					res.render('scan', {
+						signature: signature,
+						jsapi_ticket: jsapi_ticket,
+						body_info: body_info
+					});
+				}
+			});
+		}
+}
+
 exports.servicedo = function(req,res){
 	var sql = req.params.sql;
     if (sql == "setTurnplate") {
@@ -23,6 +120,71 @@ exports.servicedo = function(req,res){
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
+		});
+	}else if(sql == "insert_input_form") {
+		var startDate = req.param("startDate");
+		var tools = req.param("tools");
+		var number = req.param("number");
+		var ctype = req.param("ctype");
+		var hasBGD = req.param("hasBGD");
+		var isEdit = req.param("isEdit");
+		if(isEdit == 0){
+			/*计算总数量和总金额*/
+			var sql0 = "select sum(unit) as sum1,sum(price) as sum2 from input_customs where input_number = '"+number+"'";
+			mysql.query(sql0, function(err0, result0) {
+				if(err0) return console.error(err0.stack);
+				var sql1 = "insert into input_form(startDate,tools,number,ctype,numTotal,priceTotal,state,hasBGD) values('"+startDate+"','"+tools+"','"+number+"','"+ctype+"','"+result0[0].sum1+"','"+result0[0].sum2+"','待审核','"+hasBGD+"')";
+				mysql.query(sql1, function(err1, result1) {
+					if(err1) return console.error(err1.stack);
+					res.send("200");
+				});
+			});
+		}else{
+			/*计算总数量和总金额*/
+			var sql0 = "select sum(unit) as sum1,sum(price) as sum2 from input_customs where input_number = '"+number+"'";
+			mysql.query(sql0, function(err0, result0) {
+				if(err0) return console.error(err0.stack);
+				var sql1 = "update input_form set ";
+				sql1 += " startDate = '" + startDate + "',";
+				sql1 += " tools = '" + tools + "',";
+				sql1 += " number = '" + number + "',";
+				sql1 += " ctype = '" + ctype + "',";
+				sql1 += " numTotal = '" + result0[0].sum1 + "',";
+				sql1 += " priceTotal = '" + result0[0].sum2 + "',";
+				sql1 += " state = '待审核'";
+				sql1 += " where id = " + isEdit;
+				console.log(sql1);
+				mysql.query(sql1, function(err1, result1) {
+					if(err1) return console.error(err1.stack);
+					res.send("200");
+				});
+			});
+		}
+	}else if(sql == "getApplyById") {
+		var id = req.param("id");
+		var sql = "select * from apply where name = '"+id+"'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+	}else if(sql == "setNoPass") {
+		var id = req.param("id");
+		var remark = req.param("remark");
+		var sql = "update apply set state = '审核不通过',remark = '"+remark+"' where id = " + id;
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});
+	}else if(sql == "HGNoPass") {
+		var id = req.param("id");
+		var remark = req.param("remark");
+		var sql = "update input_form set state = '驳回',remark = '"+remark+"' where id = " + id;
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
 		});
 	}else if(sql == "setIsPrint") {
 		var id = req.param("id");
@@ -376,7 +538,25 @@ exports.servicedo = function(req,res){
 		var startDate = req.param("startDate");
 		var teamNo = req.param("teamNo");
 		var roomNo = req.param("roomNo");
-		var sql = "select * from input_customs where curiseName like '%"+teamNo+"%' and input_number like '%"+roomNo+"%'  and startDate like '%"+startDate+"%'";
+		var sType = req.param("sType");
+		var s_state = req.param("s_state");
+		if(sType == "*"){
+			sType = "";
+		}
+		if(s_state == "*"){
+			s_state = "";
+		}
+		var sql = "select * from input_form where hasBGD like '%"+sType+"%' and state like '%"+s_state+"%' and tools like '%"+teamNo+"%' and number like '%"+roomNo+"%'  and startDate like '%"+startDate+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
+	}else if(sql == "getXVistor3"){
+		console.log("Run");
+		var no = req.param("no");
+		var sql = "select * from input_customs where input_number like '%"+no+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -444,7 +624,7 @@ exports.servicedo = function(req,res){
 		var idlist = req.param("idlist");
 		var arr1 = idlist.split("*");
 		for(var i=0;i<arr1.length;i++){
-			var sql = "update apply set state = '已审核' where id = "+arr1[i];
+			var sql = "update apply set state = '审核通过',remark = '' where id = "+arr1[i];
 			mysql.query(sql, function(err2, result2) {
 				if(err2) return console.error(err2.stack);
 			});
@@ -479,9 +659,35 @@ exports.servicedo = function(req,res){
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send(result2);
-		});
-		
-		
+		});	
+	}else if(sql == "getDocByKey"){
+		var id = req.param("id");
+		var sql = "select * from input_form where id="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});	
+	}else if(sql == "delPass"){
+		var id = req.param("id");
+		var sql = "update input_form set state = '已删除' where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
+	}else if(sql == "HGPass"){
+		var id = req.param("id");
+		var sql = "update input_form set state = '海关已审核' where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
+	}else if(sql == "YLGPass"){
+		var id = req.param("id");
+		var sql = "update input_form set state = '邮轮港已审核' where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
 	}else if(sql == "updateLine"){
 		var descr = req.param("descr");
 		var lineId = req.param("lineId");
@@ -501,23 +707,43 @@ exports.servicedo = function(req,res){
 		var username = req.param("username");
 		var password = req.param("password");
 		var company = req.param("company");
-		var Sql = "select * from customs_user where username = '"+username+"' and company = '"+company+"'";
-	    mysql.query(Sql ,function(error,obj){
-	          if(error){console.log(error);res.send("400");return false;}
-	          if(obj[0]){
-	          	  if(obj[0].pwd == password){
-	                  res.send({
-	                  	username:username,
-	                  	company:obj[0].company
-	                  });
+		if(company == '供应商'){
+			var Sql = "select * from apply where name = '"+username+"'";
+		    mysql.query(Sql ,function(error,obj){
+		          if(error){console.log(error);res.send("400");return false;}
+		          if(obj[0]){
+		          	  if(obj[0].ftel == password){
+		                  res.send({
+		                  	username:username,
+		                  	company:company
+		                  });
+			          }else{
+			              res.send("400");
+			          }
 		          }else{
-		              res.send("400");
+		          	  res.send("400");
 		          }
-	          }else{
-	          	  res.send("400");
-	          }
-	          
-	    });
+		          
+		    });
+		}else{
+			var Sql = "select * from customs_user where username = '"+username+"' and company = '"+company+"'";
+		    mysql.query(Sql ,function(error,obj){
+		          if(error){console.log(error);res.send("400");return false;}
+		          if(obj[0]){
+		          	  if(obj[0].pwd == password){
+		                  res.send({
+		                  	username:username,
+		                  	company:obj[0].company
+		                  });
+			          }else{
+			              res.send("400");
+			          }
+		          }else{
+		          	  res.send("400");
+		          }
+		          
+		    });
+		}
 	}else if(sql == "py_getTotal"){
 		var date = req.param("date");
 		var ship_id = req.param("ship_id");
@@ -669,12 +895,39 @@ exports._uploaddo = function(req, res) {
 
 exports.uploaddo2 = function(req, res) {
 	var username = req.body.username;
+	var fname1 = req.body.fname;
+	var ftel = req.body.ftel;
+	var fadd = req.body.fadd;
 	var fname = req.files.img_url.path.replace("public\\upload\\", "").replace("public/upload/", "");
-	var sql = "insert into apply(name,image,state) values('"+username+"','"+fname+"','待审核')";
+	var sql = "insert into apply(name,image,state,fname,ftel,fadd) values('"+username+"','"+fname+"','待审核','"+fname1+"','"+ftel+"','"+fadd+"')";
 	mysql.query(sql, function(err, result) {
 		if(err) return console.error(err.stack);
 		res.redirect("/customs/page/regsuccess.html");
 	});	
+};
+
+exports.uploaddo3 = function(req, res) {
+	var username = req.body.username;
+	var fname1 = req.body.fname;
+	var ftel = req.body.ftel;
+	var fadd = req.body.fadd;
+	var image_name = req.body.image_name;
+	var editid = req.body.editid;
+	var fname = image_name;
+	if(image_name == "-"){
+		fname = req.files.img_url.path.replace("public\\upload\\", "").replace("public/upload/", "");
+	}
+	var sql = "update apply set ";
+			sql += " image = '" + fname + "',";
+			sql += " fname = '" + fname1 + "',";
+			sql += " ftel = '" + ftel + "',";
+			sql += " fadd = '" + fadd + "',";
+			sql += " state = '待审核'";
+			sql += " where id = " + editid;
+	mysql.query(sql, function(err, result) {
+		if(err) return console.error(err.stack);
+		res.redirect("/customs/page/gys_form.html?c#=0");
+	});
 };
 
 exports.uploaddo = function(req, res) {
@@ -683,7 +936,7 @@ exports.uploaddo = function(req, res) {
 	var curiseName = req.body.curiseName;
 	var input_number = req.body.input_number;
 	/*解析数据生成记录*/
-	var sql1 = "select name from apply where state ='已审核'";
+	var sql1 = "select name from apply where state ='审核通过'";
 	mysql.query(sql1, function(err, result1) {
 		if(err) return console.error(err.stack);
 		var gyslist = '';

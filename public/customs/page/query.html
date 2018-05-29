@@ -3,32 +3,25 @@
 
 	<head>
 		<meta charset="utf-8">
-		<title>上海港邮供报关系统</title>
+		<title>吴淞口国际邮轮港邮供物流管理系统</title>
 
 		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
 
 		<script src="../framework/jquery-1.9.1.js"></script>
 		<script src="../framework/amazeui/amazeui.min.js"></script>
 
-		<script src="../framework/main.js"></script>
+		
 
 		<link rel="stylesheet" href="../framework/css/admin.css">
 		<script type="text/javascript">
-
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				$.ajax({
-					type: "post",
-					url: "/service/getNumber",
-					success: function(data) {
-						var l = '';
-						for(var i in data){
-							l = l + '<option value="'+data[i].input_number+'">'+data[i].input_number+'</option>';
-						}
-						$("#roomNo").html(l);
-					}
-				});
+				if(sessionStorage.authorize != 1){
+					window.location = 'login.html';
+				}
+				$("#cname").html(sessionStorage.company+"-"+sessionStorage.username);
+				search();
 			});
 
 			var lineId = '';
@@ -37,6 +30,11 @@
 			var namelist = '';
 
 			var _timestamp = '';
+
+			function exitUser(){
+				sessionStorage.authorize = 0;
+				window.location = 'login.html';
+			}
 
 			function refreshPage(){
 				$('#ticketlist').html("取消中...");
@@ -84,14 +82,15 @@
 				$('#ticketlist').html("数据加载中...");
 				var $modal = $('#doc-modal-1');
 				$modal.modal('toggle');
+
+				var url = window.location.href;
+				var arr1 = url.split("?id=");
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getXVistor",
+					url: "/service/getXVistor3",
 					data: {
-						startDate:'',
-						teamNo:'',
-						roomNo:$("#roomNo").val()
+						no:arr1[1]
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -100,7 +99,7 @@
 						var count = 0;
 						for(var i in data){
 							json_tbody += '<tr>';
-							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
 							json_tbody += '<td>'+data[i].no+'</td>';
 							json_tbody += '<td>'+data[i].name+'</td>';
 							json_tbody += '<td>'+data[i].nameEn+'</td>';
@@ -108,8 +107,8 @@
 							json_tbody += '<td>'+data[i].price+'</td>';
 							json_tbody += '<td>'+data[i].empolyeeName+'</td>';
 							json_tbody += '<td>'+data[i].carNo+'</td>';
-							json_tbody += '<td>'+data[i].input_number+'</td>';
-							json_tbody += '<td>'+data[i].state+'</td>';
+							//json_tbody += '<td>'+data[i].input_number+'</td>';
+							//json_tbody += '<td>'+data[i].state+'</td>';
 							json_tbody += '</tr>';
 							count +=1;
 						}
@@ -117,11 +116,13 @@
 						$("#json_tbody").html(json_tbody);
 					}
 				});
+				var url = window.location.href;
+				var arr1 = url.split("?id=");
 				$.ajax({
 					type: "post",
 					url: "/service/getFJ",
 					data: {
-						roomNo:$("#roomNo").val()
+						roomNo:arr1[1]
 					},
 					success: function(data) {
 						var img = '';
@@ -311,7 +312,7 @@
 		<div>
 			<header class="am-topbar am-topbar-inverse admin-header">
 				<div class="am-topbar-brand">
-					<strong>上海港邮供报关系统</strong>
+					<strong>吴淞口国际邮轮港邮供物流管理系统</strong>
 				</div>
 
 				<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
@@ -339,7 +340,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关数据审核</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关数据明细</strong> / <small>列表</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -372,11 +373,11 @@
 					      	<!--<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
 					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
 					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >-->
-					      	<select style="height:38px" id="roomNo">
+					      	<!--<select style="height:38px" id="roomNo">
 					      		<option value="-">录入编号</option>
 					      	</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
-					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-default am-btn">批量审核</button>
+					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-default am-btn">批量审核</button>-->
 					      </div>
 
 
@@ -386,7 +387,7 @@
 										<table class="am-table am-table-striped am-table-hover table-main jdt-table">
 											<thead>
 												<tr>
-													<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>
+													
 													<th>序号</th>
 													<th>商品名称</th>
 													<th>商品英文名</th>
@@ -394,8 +395,8 @@
 													<th>金额（RMB）</th>
 													<th>供应商全名</th>
 													<th>载运车辆牌号</th>
-													<th>录入编号</th>
-													<th>状态</th>
+													
+													
 												</tr>
 											</thead>
 											<tbody id="json_tbody">

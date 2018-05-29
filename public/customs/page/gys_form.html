@@ -18,7 +18,31 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				
+				var url = window.location.href;
+				if(url.indexOf("c#=0")!=-1){
+					alert("修改成功！");
+					window.location = 'gys_form.html';
+				}
+				$.ajax({
+					type: "post",
+					url: "/service/getApplyById",
+					data: {
+						id:window.sessionStorage.username
+					},
+					success: function(data) {
+						console.log(data);
+						$("#username").val(data[0].name);
+						$("#fname").val(data[0].fname);
+						$("#ftel").val(data[0].ftel);
+						$("#fadd").val(data[0].fadd);
+						$("#state").val(data[0].state);
+						$("#remark").val(data[0].remark);
+						$("#image_name").val(data[0].image);
+						$("#editid").val(data[0].id);
+						
+						$("#img1").attr("src","/upload/"+data[0].image);
+					}
+				});
 			});
 
 			var lineId = '';
@@ -77,7 +101,7 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getXVistor1",
+					url: "/service/getXVistor",
 					data: {
 						startDate:$("#startDate").val(),
 						teamNo:$("#teamNo").val(),
@@ -91,8 +115,15 @@
 						for(var i in data){
 							json_tbody += '<tr>';
 							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].no+'</td>';
+							json_tbody += '<td>'+data[i].name+'</td>';
+							json_tbody += '<td>'+data[i].nameEn+'</td>';
+							json_tbody += '<td>'+data[i].unit+'</td>';
+							json_tbody += '<td>'+data[i].price+'</td>';
+							json_tbody += '<td>'+data[i].empolyeeName+'</td>';
+							json_tbody += '<td>'+data[i].carNo+'</td>';
 							json_tbody += '<td>'+data[i].input_number+'</td>';
-							json_tbody += '<td><image style="height:200px" src="/upload/'+data[i].name+'"></image></td>';
+							json_tbody += '<td>'+data[i].state+'</td>';
 							json_tbody += '</tr>';
 							count +=1;
 						}
@@ -156,12 +187,45 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/delTicketDoc1",
+					url: "/service/delTicketDoc",
 					data: {
 						idlist:result
 					},
 					success: function(data) {
 						alert("删除成功！");	
+						search();
+					}
+				});
+			}
+
+			function update1(){
+				if(document.all.img_url.value != ""){
+		    		$("#image_name").val("-");
+		    	}
+				document.forms[0].submit();
+			}
+
+			function ApproveDoc(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk1("idlist"));
+				//alert(result);
+				if(result==""){
+					alert("您没有选择");
+					return false;
+				}
+
+				
+				$.ajax({
+					type: "post",
+					url: "/service/ApproveDoc1",
+					data: {
+						idlist:result
+					},
+					success: function(data) {
+						alert("审核成功！");	
 						search();
 					}
 				});
@@ -307,7 +371,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关附件查询</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息管理</strong> / <small>表单</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -335,52 +399,46 @@
 					          </div>
 					        </div>
 					      </div>-->
-
-					      <div style="margin-left:30px">
-					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >
-					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
-					      	<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
-					      </div>
-
-
 							<div class="am-g">
-								<div class="am-u-sm-12">
-									<form class="am-form">
-										<table class="am-table am-table-striped am-table-hover table-main jdt-table">
-											<thead>
-												<tr>
-													<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>
-													<th>录入编号</th>
-													<th>附件</th>
-												</tr>
-											</thead>
-											<tbody id="json_tbody">
-												
-											</tbody>
+								<div class="am-u-lg-6 am-u-md-8 am-u-sm-left">
+									<form enctype="multipart/form-data" method="post" action="uploaddo3" class="am-form">
+										<br>
+										<label for="username">供应商名称</label>
+										<input type="text" name="username" id="username" disabled="disabled" value="">
+										<br>
+										<label for="username">负责人姓名</label>
+										<input type="text" name="fname" id="fname" value="">
+										<br>
+										<label for="username">联系电话</label>
+										<input type="text" name="ftel" id="ftel" value="">
+										<br>
+										<label for="username">经营地址</label>
+										<input type="text" name="fadd" id="fadd" value="">
+										<br>
+										<label for="username">当前状态</label>
+										<input type="text" name="state" id="state" disabled="disabled" value="">
+										<br>
+										<label for="username">审核意见</label>
+										<input type="text" name="remark" id="remark" disabled="disabled" value="">
+										<br>
+										<label for="username">营业执照上传</label>
+										<img id="img1" style="height:300px" />
+										<table>
+											<tr>
+												<td><input type="file" accept="image/*" name="img_url" ></td>
+											</tr>
 										</table>
-										<div class="am-cf">
-											共<span id="total"></span>条记录
-											<div class="am-fr">
-												<ul class="am-pagination" id="pagination">
-													
-												</ul>
-											</div>
-										</div>
+										<br />
+										<br/>
+										<button type="button" onclick="update1()" class="am-btn am-btn-primary">信息修改</button>
+										<input type="hidden" name="image_name" id="image_name" value="">
+										<input type="hidden" name="editid" id="editid" value="">
 									</form>
 								</div>
 							</div>
-							<div class="am-modal am-modal-confirm" tabindex="-1" id="del-confirm">
-								<div class="am-modal-dialog">
-									<div class="am-modal-hd">提示</div>
-									<div class="am-modal-bd">
-										你，确定要删除这条记录吗？
-									</div>
-									<div class="am-modal-footer">
-										<span class="am-modal-btn" data-am-modal-cancel>取消</span>
-										<span class="am-modal-btn" data-am-modal-confirm onClick="delDoc(4)">确定</span>
-									</div>
-								</div>
-							</div>
+					     
+
+
 						</div>
 						</div>
 

@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="utf-8">
-		<title>上海港邮供报关系统</title>
+		<title>吴淞口国际邮轮港邮供物流管理系统</title>
 
 		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
 
@@ -18,7 +18,7 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
-				
+				search();
 			});
 
 			var lineId = '';
@@ -81,7 +81,9 @@
 					data: {
 						startDate:$("#startDate").val(),
 						teamNo:$("#teamNo").val(),
-						roomNo:$("#roomNo").val()
+						roomNo:$("#roomNo").val(),
+						sType:$("#stype").val(),
+						s_state:$("#s_state").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -90,23 +92,69 @@
 						var count = 0;
 						for(var i in data){
 							json_tbody += '<tr>';
-							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
-							json_tbody += '<td>'+data[i].no+'</td>';
-							json_tbody += '<td>'+data[i].name+'</td>';
-							json_tbody += '<td>'+data[i].nameEn+'</td>';
-							json_tbody += '<td>'+data[i].unit+'</td>';
-							json_tbody += '<td>'+data[i].price+'</td>';
-							json_tbody += '<td>'+data[i].empolyeeName+'</td>';
-							json_tbody += '<td>'+data[i].carNo+'</td>';
-							json_tbody += '<td>'+data[i].input_number+'</td>';
+							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							var hasBGD = data[i].hasBGD;
+							if(hasBGD == "0"){
+								hasBGD = "无报关单";
+							}else if(hasBGD == "1"){
+								hasBGD = "有报关单";
+							}else if(hasBGD == "2"){
+								hasBGD = "特殊车辆";
+							}
+							json_tbody += '<td>'+hasBGD+'</td>';
+							json_tbody += '<td>'+data[i].startDate+'</td>';
+							json_tbody += '<td>'+data[i].tools+'</td>';
+							json_tbody += '<td>'+data[i].number+'</td>';
+							json_tbody += '<td>'+data[i].ctype+'</td>';
+							json_tbody += '<td>'+data[i].numTotal+'</td>';
+							json_tbody += '<td>'+data[i].priceTotal+'</td>';
+
 							json_tbody += '<td>'+data[i].state+'</td>';
-							json_tbody += '</tr>';
+							json_tbody += '<td>'+(data[i].remark?data[i].remark:"")+'</td>';
+							
+							json_tbody += "<td><button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-primary am-hide-sm-only' onclick='referTo(" + data[i].number  + ")'>查看明细和附件</button>";
+							if(data[i].state == "待审核"){
+								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' onclick='delPass(" + data[i].id + ")'>删除</button>";
+							}
+							if(data[i].state == "待审核" || data[i].state == "驳回"){
+								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='editDoc(" + data[i].id + "," + data[i].hasBGD + ")'>编辑</button>";
+							}
+							json_tbody += '</td></tr>';
 							count +=1;
 						}
 						$("#total").html(count);
 						$("#json_tbody").html(json_tbody);
 					}
 				});
+			}
+
+			function editDoc(id,hasBGD = "ylg_import1.html"){
+				if(hasBGD == 0){
+					hasBGD = "ylg_import1.html"
+				}else if(hasBGD == 1){
+					hasBGD = "ylg_import.html"
+				}else if(hasBGD == 2){
+					hasBGD = "ylg_import2.html"
+				}
+				window.location = hasBGD+'?id='+id;
+			}
+
+			function delPass(id){
+				$.ajax({
+					type: "post",
+					url: "/service/delPass",
+					data: {
+						id:id
+					},
+					success: function(data) {
+						alert("删除成功！");	
+						search();
+					}
+				});
+			}
+
+			function referTo(n){
+				window.open('query.html?id='+n);
 			}
 
 			 function jqchk(name){ //jquery获取复选框值
@@ -312,7 +360,7 @@
 		<div>
 			<header class="am-topbar am-topbar-inverse admin-header">
 				<div class="am-topbar-brand">
-					<strong>上海港邮供报关系统</strong>
+					<strong>吴淞口国际邮轮港邮供物流管理系统</strong>
 				</div>
 
 				<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
@@ -340,7 +388,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关数据查询</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">报关记录查询</strong> / <small>列表</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -370,12 +418,26 @@
 					      </div>-->
 
 					      <div style="margin-left:30px">
+					      	<select id="stype" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="1">有报关单</option>
+					      		<option value="0">无报关单</option>
+					      		<option value="2">特殊车辆</option>
+					      	</select>
 					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
 					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
 					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >
+					      	<select id="s_state" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="待审核">待审核</option>
+					      		<option value="已删除">已删除</option>
+					      		<option value="驳回">驳回</option>
+					      		<option value="海关已审核">海关已审核</option>
+					      		<option value="邮轮港已审核">邮轮港已审核</option>
+					      	</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
-					      	<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
-					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>
+					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
+					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
 					      </div>
 
 
@@ -385,16 +447,17 @@
 										<table class="am-table am-table-striped am-table-hover table-main jdt-table">
 											<thead>
 												<tr>
-													<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>
-													<th>序号</th>
-													<th>商品名称</th>
-													<th>商品英文名</th>
-													<th>重量（KG）</th>
-													<th>金额（RMB）</th>
-													<th>供应商全名</th>
-													<th>载运车辆牌号</th>
+													<!--<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>-->
+													<th>申报类型</th>
+													<th>出航日期</th>
+													<th>运输工具</th>
 													<th>录入编号</th>
+													<th>添加/起卸</th>
+													<th>申报数量</th>
+													<th>金额（RMB）</th>
 													<th>状态</th>
+													<th>意见</th>
+													<th>操作</th>
 												</tr>
 											</thead>
 											<tbody id="json_tbody">
@@ -440,6 +503,27 @@
 		    </div>
 		    <div id="ticketlist" class="am-modal-bd">
 		        
+		    </div>
+		  </div>
+		</div>
+
+		<div class="am-modal am-modal-no-btn" tabindex="-1" id="doc-modal-2">
+		  <div class="am-modal-dialog">
+		    <div class="am-modal-hd">&nbsp;
+		      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		    </div>
+		    <div class="am-modal-bd">
+		      <table class="am-table am-table-bordered">
+							<tr>
+								<td>填写意见</td>
+								<td><input type="text" id="remark" /></td>
+							</tr>
+						</table>
+						<button type="button" class="am-btn am-btn-danger" onclick="closeDoc();">关闭
+		            </button>
+						<button type="button" class="am-btn am-btn-primary" onclick="submitDoc();">
+		               提交
+		            </button>
 		    </div>
 		  </div>
 		</div>

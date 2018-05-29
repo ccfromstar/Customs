@@ -106,7 +106,7 @@
 						tools:$("#curiseName").val(),
 						number:$("#input_number").val(),
 						ctype:$("#ctype").val(),
-						hasBGD:1,
+						hasBGD:2,
 						isEdit:isEdit
 					},
 					success: function(data) {
@@ -148,7 +148,7 @@
 				<div class="admin-content" ng-controller="AdminController">
 					<div class="admin-content-body">
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">有报关单录入</strong> / <small>表单</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">特种车辆申报</strong> / <small>表单</small></div>
 						</div>
 						<div class="am-form bg-form">
 							<div class="am-g am-margin-top">
@@ -183,12 +183,6 @@
 										<td>录入编号</td>
 										<td>
 											<input type="" id="input_number" name="input_number" class="am-form-field">
-										</td>
-									</tr>
-									<tr>
-										<td>数据Excel表导入</td>
-										<td>
-											<iframe frameborder=0 src="/upload" style="width:550px;height:60px"></iframe>
 										</td>
 									</tr>
 									<tr>

@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 
 	<head>
-		<title>吴淞口国际邮轮港邮供物流管理系统</title>
+		<title>上海港邮供报关系统</title>
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="renderer" content="webkit">
@@ -71,14 +71,8 @@
 				          window.localStorage.removeItem('pwd1');
 				          window.localStorage.removeItem("remember-me1");
 				        }
-				        if(data.company == '代理'){
+				        if(data.company == '邮轮港公司'){
 				        	window.location = 'ylg_import.html';
-				        }else if(data.company == '邮轮港'){
-				        	window.location = 'gys.html'; 
-				        }else if(data.company == '海关'){
-				        	window.location = 'queryhg.html'; 
-				        }else if(data.company == '供应商'){
-				        	window.location = 'gys_form.html'; 
 				        }						
 					}
 				});
@@ -107,49 +101,38 @@
 		</script>
 	</head>
 
-	<body style="background-image: url('/img/2.jpg');background-repeat:no-repeat;background-size:100% 100%;">
+	<body>
 		<div class="header">
 			<div class="am-g">
-				<br/><br/><br/><br/><br/>
-				
-				
-				
+				<br/><br/>
+				<img src="../framework/logo1.jpg" style="width:200px">
+				<h1>爱饮（上海）贸易云平台后台管理系统</h1>
+				<p>AI Yin (Shanghai) trade cloud platform background management system
+					<br/></p>
 			</div>
-			
+			<hr />
 		</div>
-		<div ></div>
-		<img src="/img/b.png" style="width:100%">
-
-		<div class="am-g" style="background-image: url('/img/a.png');width: 800px">
+		<div class="am-g">
 			<div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
-			
+				<h3>登录</h3>
+				<hr>
 				<form method="post" class="am-form">
-					
-					<select style="margin-top:220px;margin-left:15px;width:330px;border:none" id="company" data-am-selected>
-					  <option value="供应商">供应商</option>
-					  <option value="代理">代理</option>	
-					  <option value="邮轮港">邮轮港</option>
-					  <option value="海关">海关</option>
-					</select>
+
+					<label for="username">用户名:</label>
+					<input type="text" name="" id="username" value="">
 					<br>
-					
-					<input style="margin-top:40px;margin-left:15px;width:330px;border:none" type="text" name="" id="username" value="">
+					<label for="password">密码:</label>
+					<input type="password" name="" id="password" value="">
 					<br>
-					
-					<input style="margin-top:25px;margin-left:15px;width:330px;border:none" type="password" name="" id="password" value="">
-					<br>
-					<table>
-						<tr>
-							<td><input id="remember-me" name="remember-me" type="checkbox" style="margin-top:30px;color:#fff;" > </input><span style="color:#fff">记住密码</span></td>
-							<td>
-								<button style="margin-left:70px;margin-top:30px" type="button" id="login" onclick="login1()" class="am-btn am-btn-default">登 录</button>
-								<button style="margin-left:20px;margin-top:30px" type="button" onclick="reg1()" class="am-btn am-btn-primary">供应商注册</button>
-							</td>
-						</tr>
-					</table>
-					<div style="height:60px"></div>
-					
+					<label for="remember-me">
+						<input id="remember-me" name="remember-me" type="checkbox" > 记住密码</input>
+					</label>
+					<br />
+					<br/>
+					<button type="button" id="login" onclick="login1()" class="am-btn am-btn-default">登 录</button>
 				</form>
+				<hr>
+				<p>© 2018 上海盛欣广告有限公司提供技术支持.</p>
 			</div>
 		</div>
 	</body>
