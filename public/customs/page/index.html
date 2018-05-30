@@ -48,7 +48,7 @@
 				<button type="button" class="am-btn am-btn-default" onclick="sumbitDoc()">生成通关二维码</button>
 		  </fieldset>
 		</form>
-		<div style="margin-left:10px" id="code"></div>
+		<div style="margin-left:10px" id="codelist"></div>
 		<div class="am-alert am-alert-success none successinfo" data-am-alert>
 		</div>
 		<script>
@@ -61,14 +61,20 @@
 					},
 					success: function(data) {
 						if(data == ""){
-							alert("没有查找到信息！");return false;
+							alert("没有查找到信息！");$("#codelist").html("");return false;
 						}
-						$("#code").qrcode({
-							render: "table", //table方式
-							width: 150, //宽度
-							height: 150, //高度
-							text: data[0].input_number+"@"+$("#carNo").val() //任意内容
-						});
+						var codelist = "";
+						$("#codelist").html("");
+						for(var i in data){
+							codelist = '<p>录入编号:'+data[i].input_number+'</p><div id="code'+i+'"></div>';
+							$("#codelist").append(codelist);
+							$("#code"+i).qrcode({
+								render: "table", //table方式
+								width: 150, //宽度
+								height: 150, //高度
+								text: data[i].input_number+"@"+$("#carNo").val() //任意内容
+							});
+						}
 					}
 				});
 			}

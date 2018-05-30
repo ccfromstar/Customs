@@ -553,6 +553,19 @@ exports.servicedo = function(req,res){
 			res.send(result2);
 		});
 		
+	}else if(sql == "getCar"){
+		var startDate = req.param("startDate");
+		var carNo = req.param("carNo");
+		var sql = "select * from carlist where time like '%"+startDate+"%' and carNo like '%"+carNo+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			for(var i in result2) {
+				result2[i].time = (result2[i].time).Format("yyyy-MM-dd hh:mm:ss");
+			}
+			res.send(result2);
+		});
+		
 	}else if(sql == "getXVistor3"){
 		console.log("Run");
 		var no = req.param("no");
@@ -655,10 +668,33 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "getCode"){
 		var carNo = req.param("carNo");
-		var sql = "select DISTINCT(input_number) from input_customs where carNo = '"+carNo+"'";
+		var sql = "select DISTINCT(input_number) from input_customs where state != '已核销' and carNo = '"+carNo+"'";
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send(result2);
+		});	
+	}else if(sql == "getMaterial"){
+		var bookingno = req.param("bookingno");
+		var arr1 = bookingno.split("@");
+
+		var sql = "select * from input_customs where input_number = '"+arr1[0]+"' and carNo = '"+arr1[1]+"'";
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});	
+	}else if(sql == "cancelMaterial"){
+		var code = req.param("code");
+		var arr1 = code.split("@");
+		/*状态已核销*/
+		/*记录车辆进港数据*/
+		var sql1 = "update input_customs set state = '已核销' where input_number = '"+arr1[0]+"' and carNo = '"+arr1[1]+"'";
+		mysql.query(sql1, function(err1, result1) {
+			if(err1) return console.error(err2.stack);
+			var sql2 = "insert into carlist(carNo,time) values('"+arr1[1]+"',now())";
+			mysql.query(sql2, function(err2, result2) {
+				if(err2) return console.error(err2.stack);
+				res.send("200");
+			});
 		});	
 	}else if(sql == "getDocByKey"){
 		var id = req.param("id");

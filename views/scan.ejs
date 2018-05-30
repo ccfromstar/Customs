@@ -14,6 +14,7 @@
 
 	<body>
 		<script>
+			var code = '';
 			wx.config({
 				debug: false,
 				appId: 'wx630bfbf8158108ec',
@@ -67,19 +68,30 @@
 						desc: 'scanQRCode desc',
 						success: function(res) {
 							//var o = JSON.stringify(res);
-							alert(res.resultStr);
-							/*
+							//alert(res.resultStr);
+							
 							var no = res.resultStr;
+							code = res.resultStr;
 							$.ajax({
 								type: "POST",
-								url: "/service/bookend",
+								url: "/service/getMaterial",
 								data: {
 									bookingno:no
 								},
 								success: function(data) {
-									alert('取餐成功！');
+									var mlist = '<table class="am-table am-table-bordered am-table-radius am-table-striped">';
+									mlist = mlist + '<tr><th>名称</th><th>重量</th><th>金额</th></tr>';
+									for(var i in data){
+										mlist = mlist + '<tr>';
+										mlist = mlist + '<td>'+data[i].name+'</td>';
+										mlist = mlist + '<td>'+data[i].unit+'</td>';
+										mlist = mlist + '<td>'+data[i].price+'</td>';
+										mlist = mlist + '</tr>';
+									}
+									mlist += '</table>';
+									$("#mlist").html(mlist);
 								}
-							});*/
+							});
 						}
 					});
 				};
@@ -87,11 +99,29 @@
 			wx.error(function(res) {
 				alert(res.errMsg);
 			});
+
+			function cancelMaterial(){
+				if(code == ""){
+					alert("请先扫描您要核销的车辆二维码");return false;
+				}
+							$.ajax({
+								type: "POST",
+								url: "/service/cancelMaterial",
+								data: {
+									code:code
+								},
+								success: function(data) {
+									alert("操作成功！");
+								}
+							});
+			}
 		</script>
 		<style>
 
 		</style>
 		&nbsp;&nbsp;<button type="button" id="scanQRCode1" class="am-btn am-btn-default" style="margin-top:5px">扫描车辆通关二维码</button>
+		<div id="mlist"></div>
+		&nbsp;&nbsp;<button type="button" onclick="cancelMaterial()" class="am-btn am-btn-success" style="margin-top:5px">核销</button>
 	</body>
 
 </html>
