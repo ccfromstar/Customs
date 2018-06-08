@@ -576,6 +576,17 @@ exports.servicedo = function(req,res){
 			res.send(result2);
 		});
 		
+	}else if(sql == "getXVistorAll"){
+		console.log("Run");
+		var startDate = req.param("startDate");
+		var teamNo = req.param("teamNo");
+		var sql = "select * from input_customs where startDate like'%"+startDate+"%' and (name like '%"+teamNo+"%' or empolyeeName like '%"+teamNo+"%' or carNo like '%"+teamNo+"')";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
 	}else if(sql == "getFJ"){
 		var roomNo = req.param("roomNo");
 		var sql = "select * from input_files where input_number like '%"+roomNo+"%'";
