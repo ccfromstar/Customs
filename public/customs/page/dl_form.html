@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<title>吴淞口国际邮轮港邮供物流管理系统</title>
+
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<script src="../framework/amazeui/amazeui.min.js"></script>
+
+		<script src="../framework/main.js"></script>
+
+		<link rel="stylesheet" href="../framework/css/admin.css">
+		<script type="text/javascript">
+
+			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
+
+			$(function(){
+				var url = window.location.href;
+				if(url.indexOf("c#=0")!=-1){
+					alert("修改成功！");
+					window.location = 'gys_form.html';
+				}
+				$.ajax({
+					type: "post",
+					url: "/service/getApplyById",
+					data: {
+						id:window.sessionStorage.username
+					},
+					success: function(data) {
+						console.log(data);
+						$("#username").val(data[0].name);
+						$("#fname").val(data[0].fname);
+						$("#ftel").val(data[0].ftel);
+						$("#fadd").val(data[0].fadd);
+						$("#state").val(data[0].state);
+						$("#remark").val(data[0].remark);
+						$("#image_name").val(data[0].image);
+						$("#editid").val(data[0].id);
+						
+						$("#img1").attr("src","/upload/"+data[0].image);
+					}
+				});
+			});
+
+			var lineId = '';
+
+			var idlist = '';
+			var namelist = '';
+
+			var _timestamp = '';
+
+			function refreshPage(){
+				$('#ticketlist').html("取消中...");
+				var $modal = $('#doc-modal-1');
+				$modal.modal('toggle');
+				
+				$.ajax({
+					type: "post",
+					url: "/service/getXVistor",
+					data: {
+						companyId:sessionStorage.company,
+						startDate:$("#startDate").val(),
+						teamNo:$("#teamNo").val(),
+						uname:$("#uname").val()
+					},
+					success: function(data) {
+						$modal.modal('toggle');
+						var count = 0;
+						var json_tbody = '';
+						for(var i in data){
+							json_tbody += '<tr>';
+							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].ticket_code+'</td>';
+							json_tbody += '<td>'+data[i].booking_no+'</td>';
+							//json_tbody += '<td></td>';
+							json_tbody += '<td>'+data[i].termNo+'</td>';
+							json_tbody += '<td>'+data[i].cabin_num+'</td>';
+							//json_tbody += '<td></td>';
+							json_tbody += '<td>'+data[i].name+'</td>';
+							json_tbody += '<td>'+data[i].nameEn+'</td>';
+							json_tbody += '<td>'+data[i].nationality+'</td>';
+							json_tbody += '<td>'+data[i].passport_no+'</td>';
+							json_tbody += '<td>'+data[i].id_no+'</td>';
+							json_tbody += '<td>'+data[i].mobile+'</td>';
+							json_tbody += '</tr>';
+							count +=1;
+						}
+						$("#total").html(count);
+						$("#json_tbody").html(json_tbody);
+					}
+				});
+			}
+
+			function search(){
+				$('#ticketlist').html("数据加载中...");
+				var $modal = $('#doc-modal-1');
+				$modal.modal('toggle');
+				
+				$.ajax({
+					type: "post",
+					url: "/service/getXVistor",
+					data: {
+						startDate:$("#startDate").val(),
+						teamNo:$("#teamNo").val(),
+						roomNo:$("#roomNo").val()
+					},
+					success: function(data) {
+						$("input[name='idlistall']").removeAttr("checked"); 
+						var json_tbody = '';
+						$modal.modal('toggle');
+						var count = 0;
+						for(var i in data){
+							json_tbody += '<tr>';
+							json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].no+'</td>';
+							json_tbody += '<td>'+data[i].name+'</td>';
+							json_tbody += '<td>'+data[i].nameEn+'</td>';
+							json_tbody += '<td>'+data[i].unit+'</td>';
+							json_tbody += '<td>'+data[i].price+'</td>';
+							json_tbody += '<td>'+data[i].empolyeeName+'</td>';
+							json_tbody += '<td>'+data[i].carNo+'</td>';
+							json_tbody += '<td>'+data[i].input_number+'</td>';
+							json_tbody += '<td>'+data[i].state+'</td>';
+							json_tbody += '</tr>';
+							count +=1;
+						}
+						$("#total").html(count);
+						$("#json_tbody").html(json_tbody);
+					}
+				});
+			}
+
+			 function jqchk(name){ //jquery获取复选框值
+			      var chk_value = '';
+			      $('input[name="' + name + '"]:checked').each(function (){
+			      		var val = $(this).val();
+			      		var arr1 = val.split("*");
+			            chk_value = chk_value + "@" + arr1[0];
+			      });
+			      chk_value = chk_value + "|";
+			      $('input[name="' + name + '"]:checked').each(function (){
+			      		var val = $(this).val();
+			      		var arr1 = val.split("*");
+			            chk_value = chk_value + "@" + arr1[1];
+			      });
+			      return chk_value;
+			  }
+
+			function changeState(){
+				console.log(jqchk1("idlistall"));
+				if(jqchk1("idlistall")=="1"){
+					$("input[name='idlist']").attr("checked","checked"); 
+				}else{
+					$("input[name='idlist']").removeAttr("checked"); 
+					refreshPage();
+				}
+			}
+
+			function jqchk1(name){ //jquery获取复选框值
+			      var chk_value = '';
+			      $('input[name="' + name + '"]:checked').each(function (){
+			          if (chk_value == ""){
+			              chk_value = $(this).val();
+			          }else{
+			              chk_value = chk_value + "*" + $(this).val();
+			          }
+			      }
+			      );
+			      return chk_value;
+			  }
+
+			function delDoc(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk1("idlist"));
+				//alert(result);
+				if(result==""){
+					alert("您没有选择");
+					return false;
+				}
+
+				
+				$.ajax({
+					type: "post",
+					url: "/service/delTicketDoc",
+					data: {
+						idlist:result
+					},
+					success: function(data) {
+						alert("删除成功！");	
+						search();
+					}
+				});
+			}
+
+			function update1(){
+				if(document.all.img_url.value != ""){
+		    		$("#image_name").val("-");
+		    	}
+				document.forms[0].submit();
+			}
+
+			function ApproveDoc(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk1("idlist"));
+				//alert(result);
+				if(result==""){
+					alert("您没有选择");
+					return false;
+				}
+
+				
+				$.ajax({
+					type: "post",
+					url: "/service/ApproveDoc1",
+					data: {
+						idlist:result
+					},
+					success: function(data) {
+						alert("审核成功！");	
+						search();
+					}
+				});
+			}
+
+			function createTicket(){
+				var arrL = idlist.split("@");
+				var num = 1;
+				var len = arrL.length - 1;
+
+				var result = (jqchk("idlist"));
+				if(result=="|"){
+					alert("您没有选择");
+					return false;
+				}
+
+				var arrRES = result.split("|");
+
+				var t = setInterval(function(){
+					var infoshow = num+"/"+len;
+					//$('#ticketlist').html(infoshow);
+					num += 1;
+				},2500);
+
+				$('#ticketlist').html("船票生成中...");
+				var $modal = $('#doc-modal-1');
+				$modal.modal('toggle');
+
+				var idlist1=arrRES[0];
+				var namelist1=arrRES[1];
+				var iaa1 = idlist1.split("@");
+				var iaa2 = namelist1.split("@");
+				var cott = 1;
+				var timestamp = new Date().getTime();
+				//递归调用
+				createPdf(iaa1,iaa2,cott,timestamp);
+			}
+
+			function sendMail(){
+				var mailaddress = $('#mailaddress').val();
+				if(mailaddress == ""){
+					alert("邮箱地址必填!");return false;
+				}
+				$.ajax({
+					type: "post",
+					url: "/service/sendMail",
+					data: {
+						mailaddress:mailaddress,
+						mailtitle:$('#mailtitle').val(),
+						timestamp:_timestamp,
+						companyId:sessionStorage.companyId
+					},
+					success: function(data) {
+						alert("邮件发送成功！");
+					}
+				});
+			}
+
+			function createPdf(iaa1,iaa2,cott,timestamp){
+				//console.log(iaa1[cott]);
+				if(cott == iaa1.length){
+					//创建压缩文件
+					$.ajax({
+						type: "post",
+						url: "/service/createZip",
+						data: {
+							timestamp:timestamp,
+							companyId:sessionStorage.companyId
+						},
+						success: function(data) {
+							_timestamp = timestamp;
+							tlist = "船票已生成完毕！<br/>请点击<a target='blank' href='http://47.98.123.67/static/zip/"+timestamp+".zip'>船票.zip</a>下载";
+							tlist = tlist+"<div>您也可以发送邮件到指定的邮箱<br/>邮箱地址：<input id='mailaddress' /><br/>邮件主题：<input id='mailtitle' value='船票下载' /><br/><button type='button' onclick='sendMail()' class='btn-c am-btn-xs am-btn-primary am-btn'>发送</button></div>";
+							$('#ticketlist').html(tlist);
+						}
+					});
+					return false;
+				}
+				//console.log(iaa1[cott]);
+				$.ajax({
+					type: "post",
+					url: "/service/createTicketXls",
+					data: {
+						idlist:iaa1[cott],
+						namelist:iaa2[cott],
+						timestamp:timestamp,
+						companyId:sessionStorage.companyId
+					},
+					success: function(data) {
+						//alert("生成成功");
+						console.log(data);
+						var tlist = '生成进度：'+cott+'/'+(iaa1.length-1);
+						$('#ticketlist').html(tlist);
+						cott = cott + 1;
+						createPdf(iaa1,iaa2,cott,timestamp);
+						/*
+						clearInterval(t);
+
+						var tlist = '';
+						var arrT = idlist.split("@");
+						var arrN = namelist.split("@");
+						//for(var i=1;i<arrT.length;i++){
+						//	tlist = tlist+"<a target='blank' href='http://39.104.66.119/static/"+arrT[i]+".pdf'>"+arrN[i]+".pdf</a>&nbsp;&nbsp;&nbsp;";
+						//}
+						tlist = "船票已生成完毕！<br/>请点击<a target='blank' href='http://39.104.66.119/static/zip/"+data+".zip'>船票.zip</a>下载";
+						$('#ticketlist').html(tlist);
+						*/
+					}
+				});
+			}
+		</script>
+	</head>
+
+	<body>
+		<div>
+			<header class="am-topbar am-topbar-inverse admin-header">
+				<div class="am-topbar-brand">
+					<strong>吴淞口国际邮轮港邮供物流管理系统</strong>
+				</div>
+
+				<button class="am-topbar-btn am-topbar-toggle am-btn am-btn-sm am-btn-success am-show-sm-only" data-am-collapse="{target: '#topbar-collapse'}"><span class="am-sr-only">导航切换</span> <span class="am-icon-bars"></span></button>
+
+				<div class="am-collapse am-topbar-collapse" id="topbar-collapse">
+
+					<ul class="am-nav am-nav-pills am-topbar-nav am-topbar-right admin-header-list">
+						<li><a href="javascript:;"><span class="am-icon-user"></span> 当前用户 <span id="cname"></span></a></li>
+						<li><a href="#" onclick="exitUser()"><span class="am-icon-power-off"></span> 退出</a></li>
+					</ul>
+				</div>
+			</header>
+			<div class="am-cf admin-main">
+				<!-- sidebar start -->
+				<div class="admin-sidebar am-offcanvas" id="admin-offcanvas">
+					<div class="am-offcanvas-bar admin-offcanvas-bar">
+						<ul class="am-list admin-sidebar-list">
+							
+						</ul>
+					</div>
+				</div>
+				<!-- sidebar end -->
+				<!-- content start -->
+				<div class="admin-content" ng-controller="AdminController">
+					<div class="admin-content-body">
+						
+						<div class="am-cf am-padding">
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">信息管理</strong> / <small>表单</small></div>
+						</div>
+						<!--
+						<div class="am-g">
+							<div class="am-u-sm-12 am-u-md-6">
+					          <div class="am-btn-toolbar">
+					            <div class="am-btn-group am-btn-group-xs">
+					              <button type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增游客</button>
+					            </div>
+					          </div>
+					        </div>
+					        <div class="am-u-sm-12 am-u-md-3">
+					          <div class="am-form-group">
+					           		<select style="display:inline;width:200px;">
+										<option>2017-12-06 盛世公主号</option>
+										<option>2017-12-06 赛琳娜号</option>
+									</select>
+					          </div>
+					        </div>
+					        <div class="am-u-sm-12 am-u-md-3">
+					          <div class="am-input-group am-input-group-sm">
+					            <input type="text" class="am-form-field" placeholder="姓名，护照号">
+					          <span class="am-input-group-btn">
+					            <button class="am-btn am-btn-default" type="button">搜索</button>
+					          </span>
+					          </div>
+					        </div>
+					      </div>-->
+							<div class="am-g">
+								<div class="am-u-lg-6 am-u-md-8 am-u-sm-left">
+									<form enctype="multipart/form-data" method="post" action="uploaddo3" class="am-form">
+										<br>
+										<label for="username">代理名称</label>
+										<input type="text" name="username" id="username" disabled="disabled" value="">
+										<br>
+										<label for="username">负责人姓名</label>
+										<input type="text" name="fname" id="fname" value="">
+										<br>
+										<label for="username">联系电话</label>
+										<input type="text" name="ftel" id="ftel" value="">
+										<br>
+										<label for="username">经营地址</label>
+										<input type="text" name="fadd" id="fadd" value="">
+										<br>
+										<label for="username">当前状态</label>
+										<input type="text" name="state" id="state" disabled="disabled" value="">
+										<br>
+										<label for="username">审核意见</label>
+										<input type="text" name="remark" id="remark" disabled="disabled" value="">
+										<br>
+										<label for="username">营业执照上传</label>
+										<img id="img1" style="height:300px" />
+										<table>
+											<tr>
+												<td><input type="file" accept="image/*" name="img_url" ></td>
+											</tr>
+										</table>
+										<br />
+										<br/>
+										<button type="button" onclick="update1()" class="am-btn am-btn-primary">信息修改</button>
+										<input type="hidden" name="image_name" id="image_name" value="">
+										<input type="hidden" name="editid" id="editid" value="">
+									</form>
+								</div>
+							</div>
+					     
+
+
+						</div>
+						</div>
+
+					</div>
+				</div>
+				<!-- content end -->
+			</div>
+		</div>
+
+		<div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="doc-modal-1">
+		  <div class="am-modal-dialog">
+		    <div class="am-modal-hd">提示信息
+		      <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+		    </div>
+		    <div id="ticketlist" class="am-modal-bd">
+		        
+		    </div>
+		  </div>
+		</div>
+
+	</body>
+
+</html>

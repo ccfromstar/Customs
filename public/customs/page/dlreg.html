@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<title>吴淞口国际邮轮港邮供物流管理系统</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<link rel="stylesheet" href="../framework/amazeui/amazeui.min.css" />
+		<script src="../framework/jquery-1.9.1.js"></script>
+		<style>
+			.header {
+				text-align: center;
+			}
+			
+			.header h1 {
+				font-size: 200%;
+				color: #333;
+				margin-top: 10px;
+			}
+			
+			.header p {
+				font-size: 14px;
+			}
+		</style>
+		<script type="text/javascript">
+			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
+			$(function() {
+				/*检测是否记住用户名密码*/
+			     
+			});
+			      
+			function reg1(){
+				if(document.all.img_url.value == ""){
+		    		alert("请选择您要上传的文件");return false;
+		    	}
+		    	document.forms[0].submit();
+			}
+		</script>
+	</head>
+
+	<body>
+		<div class="header">
+			<div class="am-g">
+				<br/><br/>
+				<img src="../framework/logo.png" style="width:200px">
+				<h1>代理注册</h1>
+			</div>
+			<hr />
+		</div>
+		<div class="am-g">
+			<div class="am-u-lg-6 am-u-md-8 am-u-sm-centered">
+				<h3>注册</h3>
+				<hr>
+				<form enctype="multipart/form-data" method="post" action="uploaddo2" class="am-form">
+					<br>
+					<label for="username">代理名称</label>
+					<input type="text" name="username" id="username" value="">
+					<br>
+					<label for="username">代理姓名</label>
+					<input type="text" name="fname" id="fname" value="">
+					<br>
+					<label for="username">联系电话</label>
+					<input type="text" name="ftel" id="ftel" value="">
+					<br>
+					<label for="username">经营地址</label>
+					<input type="text" name="fadd" id="fadd" value="">
+					<br>
+					<label for="username">营业执照上传</label>
+					<table>
+						<tr>
+							<td><input type="file" accept="image/*" name="img_url" ></td>
+						</tr>
+					</table>
+					<br />
+					<br/>
+					<input type="hidden" name="type" id="type" value="代理">
+					<button type="button" onclick="reg1()" class="am-btn am-btn-primary">确认</button>
+				</form>
+				<hr>
+				<p>© 2018 上海邮轮中心提供技术支持.</p>
+			</div>
+		</div>
+	</body>
+</html>
