@@ -84,8 +84,17 @@
 					      <div style="margin-left:30px" >
 					      
 					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
-					      	<input type="" id="teamNo" class="am-form-field" style="width:220px;display: inline-block;" placeholder="商品名称/供应商/车牌号" >
-					 
+					      	<input type="" id="teamNo" class="am-form-field" style="width:300px;display: inline-block;" placeholder="商品名称/供应商/运输工具/代理名称" >
+					 						<select id="ctype" name="ctype" style="width:200px;height:40px" >
+					 						  <option value="">添加/起卸</option>
+											  <option value="添加">添加</option>
+											  <option value="起卸">起卸</option>
+											</select>
+											<select id="sbtype" name="sbtype" style="width:200px;height:40px" >
+												<option value="">申报海关</option>
+											  <option value="吴淞">吴淞</option>
+											  <option value="业务三处">业务三处</option>
+											</select>
 					      	<button type="button" @click="search" class="btn-c am-btn am-btn-primary am-btn">检索</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
@@ -100,6 +109,8 @@
 											<td>{{ num1 }} KG</td>
 											<td>累计金额</td>
 											<td>{{ num2 }} 元</td>
+											<td>累计车辆数</td>
+											<td>{{ num3 }} 辆</td>
 										</tr>
 									</table>
 								</div>
@@ -112,26 +123,32 @@
 													
 													<th>序号</th>
 													<th>日期</th>
+													<th>运输工具</th>
 													<th>商品名称</th>
 													<th>商品英文名</th>
 													<th>重量（KG）</th>
 													<th>金额（RMB）</th>
 													<th>供应商全名</th>
 													<th>载运车辆牌号</th>
-													
-													
+													<th>添加/起卸</th>
+													<th>申报海关</th>
+													<th>代理名称</th>
 												</tr>
 											</thead>
 											<tbody  id="json_tbody">
 													<tr v-for="item in items">
 														<td>{{ item.id }}</td>
 														<td>{{ item.startDate }}</td>
+														<td>{{ item.curiseName }}</td>
 														<td>{{ item.name }}</td>
 														<td>{{ item.nameEn }}</td>
 														<td>{{ item.unit }}</td>
 														<td>{{ item.price }}</td>
 														<td>{{ item.empolyeeName }}</td>
 														<td>{{ item.carNo }}</td>
+														<td>{{ item.ctype }}</td>
+														<td>{{ item.sbtype }}</td>
+														<td>{{ item.dlname }}</td>
 													</tr>	
 											</tbody>
 										</table>
@@ -256,7 +273,8 @@
 						items:'',
 						count:0,
 						num1:0,
-						num2:0
+						num2:0,
+						num3:0
 					},
 					created: function(){
 							var vm = this
@@ -267,17 +285,24 @@
 							
 							axios.post('/service/getXVistorAll',{
 								startDate:$('#startDate').val(),
-								teamNo:$('#teamNo').val()
+								teamNo:$('#teamNo').val(),
+								ctype:$('#ctype').val(),
+								sbtype:$('#sbtype').val()
 							})
 							  .then(function (response) {
 							    console.log(response);
 							    $modal.modal('toggle');
 							    var data1 = response.data
 							    vm.items = data1
+							    var list3 = '';
 							    for(var i in data1){
 							    	vm.count +=1
 							    	vm.num1 = vm.num1 + Number(data1[i].unit)
 							    	vm.num2 = vm.num2 + Number(data1[i].price)
+							    	if(list3.indexOf(data1[i].carNo) == -1){
+							    		vm.num3 +=1
+							    		list3 = list3 + ";" + data1[i].carNo
+							    	}
 							    }
 							    vm.num1 = vm.num1.toFixed(2)
 							    vm.num2 = vm.num2.toFixed(2)
@@ -297,20 +322,28 @@
 							
 							axios.post('/service/getXVistorAll',{
 								startDate:$('#startDate').val(),
-								teamNo:$('#teamNo').val()
+								teamNo:$('#teamNo').val(),
+								ctype:$('#ctype').val(),
+								sbtype:$('#sbtype').val()
 							})
 							  .then(function (response) {
 							    console.log(response);
 							    $modal.modal('toggle');
 							    var data1 = response.data
 							    vm.items = data1
+							    var list3 = '';
 							    vm.num1 = 0
 							    vm.num2 = 0
+							    vm.num3 = 0
 							    vm.count = 0
 							    for(var i in data1){
 							    	vm.count +=1
 							    	vm.num1 = vm.num1 + Number(data1[i].unit)
 							    	vm.num2 = vm.num2 + Number(data1[i].price)
+							    	if(list3.indexOf(data1[i].carNo) == -1){
+							    		vm.num3 +=1
+							    		list3 = list3 + ";" + data1[i].carNo
+							    	}
 							    }
 							    vm.num1 = vm.num1.toFixed(2)
 							    vm.num2 = vm.num2.toFixed(2)

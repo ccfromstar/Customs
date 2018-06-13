@@ -77,7 +77,8 @@
 					type: "post",
 					url: "/service/delTicketDoc2",
 					data: {
-						idlist:id
+						idlist:id,
+						type:''
 					},
 					success: function(data) {
 						alert("操作成功！");	
@@ -119,6 +120,7 @@
 							json_tbody += '<td>'+data[i].fadd+'</td>';
 							json_tbody += '<td><a target="_blank" href="/upload/'+data[i].image+'"><image style="height:20px" src="/upload/'+data[i].image+'"></image></a></td>';
 							json_tbody += '<td>'+data[i].state+'</td>';
+							json_tbody += '<td>'+data[i].state1+'</td>';
 							json_tbody += '<td>'+(data[i].remark?data[i].remark:"")+'</td>';
 							json_tbody += "<td><button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-primary am-hide-sm-only' onclick='pass(" + data[i].id  + ")'>通过</button>";
 						    json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-danger am-hide-sm-only' onclick='npass(" + data[i].id + ")'>不通过</button></td>";
@@ -410,7 +412,8 @@
 													<th>联系电话</th>
 													<th>经营地址</th>
 													<th>营业执照</th>
-													<th>状态</th>
+													<th>邮轮港状态</th>
+													<th>海关状态</th>
 													<th>审核意见</th>
 													<th>操作</th>
 												</tr>

@@ -94,7 +94,7 @@
 						teamNo:$("#teamNo").val(),
 						roomNo:$("#roomNo").val(),
 						sType:$("#stype").val(),
-						s_state:'海关已审核'
+						s_state:$("#s_state").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -113,16 +113,21 @@
 								hasBGD = "特殊车辆";
 							}
 							json_tbody += '<td>'+hasBGD+'</td>';
+							json_tbody += '<td>'+data[i].dlname+'</td>';
 							json_tbody += '<td>'+data[i].startDate+'</td>';
 							json_tbody += '<td>'+data[i].tools+'</td>';
 							json_tbody += '<td>'+data[i].number+'</td>';
+							json_tbody += '<td>'+data[i].bgd_number+'</td>';
+							json_tbody += '<td>'+data[i].sbtype+'</td>';
 							json_tbody += '<td>'+data[i].ctype+'</td>';
 							json_tbody += '<td>'+data[i].numTotal+'</td>';
 							json_tbody += '<td>'+data[i].priceTotal+'</td>';
 							json_tbody += '<td>'+data[i].state+'</td>';
 							
 							json_tbody += "<td><button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-primary am-hide-sm-only' onclick='referTo(" + data[i].number  + ")'>查看明细和附件</button>";
-						    json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='YLGPass(" + data[i].id + ")'>放行</button>";
+							if(data[i].state == "海关已审核"){
+								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='YLGPass(" + data[i].id + ")'>审核通过</button>";
+							}
 							json_tbody += '</tr>';
 							count +=1;
 						}
@@ -402,7 +407,7 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">车辆放行审核</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">作业审核</strong> / <small>列表</small></div>
 						</div>
 						<!--
 						<div class="am-g">
@@ -440,7 +445,15 @@
 					      	</select>
 					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
 					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
-					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >
+					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="起卸单号" >
+					      	<select id="s_state" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="待审核">待审核</option>
+					      		<option value="已删除">已删除</option>
+					      		<option value="驳回">驳回</option>
+					      		<option value="海关已审核">海关已审核</option>
+					      		<option value="邮轮港已审核">邮轮港已审核</option>
+					      	</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
@@ -455,9 +468,12 @@
 												<tr>
 													<!--<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>-->
 													<th>申报类型</th>
+													<th>代理名称</th>
 													<th>出航日期</th>
 													<th>运输工具</th>
-													<th>录入编号</th>
+													<th>申报海关</th>
+													<th>起卸单号</th>
+													<th>报关单号</th>
 													<th>添加/起卸</th>
 													<th>申报数量</th>
 													<th>金额（RMB）</th>

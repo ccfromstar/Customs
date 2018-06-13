@@ -97,6 +97,8 @@
 						var json_tbody = '';
 						$modal.modal('toggle');
 						var count = 0;
+						var num1 = 0,num2 = 0,num3 = 0;
+						var list3 = '';
 						for(var i in data){
 							json_tbody += '<tr>';
 							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
@@ -110,8 +112,17 @@
 							//json_tbody += '<td>'+data[i].input_number+'</td>';
 							//json_tbody += '<td>'+data[i].state+'</td>';
 							json_tbody += '</tr>';
+							num1 += Number(data[i].unit);
+							num2 += Number(data[i].price);
+							if(list3.indexOf(data[i].carNo) == -1){
+							    num3 +=1
+							    list3 = list3 + ";" + data[i].carNo
+							}
 							count +=1;
 						}
+						$("#num1").html(num1.toFixed(2));
+						$("#num2").html(num2.toFixed(2));
+						$("#num3").html(num3);
 						$("#total").html(count);
 						$("#json_tbody").html(json_tbody);
 					}
@@ -380,7 +391,18 @@
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-default am-btn">批量审核</button>-->
 					      </div>
 
-
+					      		<div class="am-u-sm-6">
+									<table style="margin-left:10px" class="am-table am-table-bordered">
+										<tr>
+											<td>累计重量</td>
+											<td><span id="num1">-</span> KG</td>
+											<td>累计金额</td>
+											<td><span id="num2">-</span> 元</td>
+											<td>累计车辆数</td>
+											<td><span id="num3">-</span> 辆</td>
+										</tr>
+									</table>
+								</div>
 							<div class="am-g">
 								<div class="am-u-sm-7">
 									<form class="am-form">

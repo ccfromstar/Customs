@@ -15,12 +15,18 @@
     <input type="hidden" id="startDate" name="startDate" >
     <input type="hidden" id="curiseName" name="curiseName" >
 	<input type="hidden" id="input_number" name="input_number" >
+    <input type="hidden" id="ctype" name="ctype" >
+    <input type="hidden" id="dlname" name="dlname" >
+    <input type="hidden" id="sbtype" name="sbtype" >
 </form>
 <script>
     function _newForm(){
         var startDate = window.parent.document.all.startDate.value;
         var curiseName = window.parent.document.all.curiseName.value;
         var input_number = window.parent.document.all.input_number.value;
+        var ctype = window.parent.document.all.ctype.value;
+        var dlname = sessionStorage.username;
+        var sbtype = window.parent.document.all.sbtype.value;
         if(startDate == ""){
         	alert("请填写启航日期");return false;
         }
@@ -28,7 +34,7 @@
             alert("请填写运输工具");return false;
         }
         if(input_number == ""){
-            alert("请填写录入编号");return false;
+            alert("请填写起卸单号");return false;
         }
     	if(document.all.img_url.value == ""){
     		alert("请选择您要上传的文件");return false;
@@ -36,6 +42,11 @@
         $("#startDate").val(startDate);
         $("#curiseName").val(curiseName);
     	$("#input_number").val(input_number);
+
+        $("#ctype").val(ctype);
+        $("#dlname").val(dlname);
+        $("#sbtype").val(sbtype);
+        
     	document.forms[0].submit();
     }
 </script>

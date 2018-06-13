@@ -128,12 +128,16 @@ exports.servicedo = function(req,res){
 		var ctype = req.param("ctype");
 		var hasBGD = req.param("hasBGD");
 		var isEdit = req.param("isEdit");
+		var dlname = req.param("dlname");
+		var bgd_number = req.param("bgd_number");
+		var sbtype = req.param("sbtype");
+
 		if(isEdit == 0){
 			/*计算总数量和总金额*/
 			var sql0 = "select sum(unit) as sum1,sum(price) as sum2 from input_customs where input_number = '"+number+"'";
 			mysql.query(sql0, function(err0, result0) {
 				if(err0) return console.error(err0.stack);
-				var sql1 = "insert into input_form(startDate,tools,number,ctype,numTotal,priceTotal,state,hasBGD) values('"+startDate+"','"+tools+"','"+number+"','"+ctype+"','"+result0[0].sum1+"','"+result0[0].sum2+"','待审核','"+hasBGD+"')";
+				var sql1 = "insert into input_form(startDate,tools,number,ctype,numTotal,priceTotal,state,hasBGD,dlname,bgd_number,sbtype) values('"+startDate+"','"+tools+"','"+number+"','"+ctype+"','"+result0[0].sum1+"','"+result0[0].sum2+"','待审核','"+hasBGD+"','"+dlname+"','"+bgd_number+"','"+sbtype+"')";
 				mysql.query(sql1, function(err1, result1) {
 					if(err1) return console.error(err1.stack);
 					res.send("200");
@@ -151,6 +155,8 @@ exports.servicedo = function(req,res){
 				sql1 += " ctype = '" + ctype + "',";
 				sql1 += " numTotal = '" + result0[0].sum1 + "',";
 				sql1 += " priceTotal = '" + result0[0].sum2 + "',";
+				sql1 += " bgd_number = '" + bgd_number + "',";
+				sql1 += " sbtype = '" + sbtype + "',";
 				sql1 += " state = '待审核'";
 				sql1 += " where id = " + isEdit;
 				console.log(sql1);
@@ -163,6 +169,13 @@ exports.servicedo = function(req,res){
 	}else if(sql == "getApplyById") {
 		var id = req.param("id");
 		var sql = "select * from apply where name = '"+id+"'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+	}else if(sql == "getShip") {
+		var sql = "select DISTINCT(name) from ship where name != ''";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -556,12 +569,19 @@ exports.servicedo = function(req,res){
 	}else if(sql == "getCar"){
 		var startDate = req.param("startDate");
 		var carNo = req.param("carNo");
-		var sql = "select * from carlist where time like '%"+startDate+"%' and carNo like '%"+carNo+"%'";
+		var ctype = req.param("ctype");
+		var change = '';
+		if(Number(ctype) == 1){
+			change = ' and timein = "" ';
+		}else if(Number(ctype) == 2){
+			change = ' and timeout = "" ';
+		}
+		var sql = "select * from carlist where startDate like '%"+startDate+"%' "+change+" and carNo like '%"+carNo+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			for(var i in result2) {
-				result2[i].time = (result2[i].time).Format("yyyy-MM-dd hh:mm:ss");
+				//result2[i].time = (result2[i].time).Format("yyyy-MM-dd hh:mm:ss");
 			}
 			res.send(result2);
 		});
@@ -576,11 +596,22 @@ exports.servicedo = function(req,res){
 			res.send(result2);
 		});
 		
+	}else if(sql == "getXQ"){
+		var txtName = req.param("txtName");
+		var sql = "select * from xieqin where name like '%"+txtName+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
 	}else if(sql == "getXVistorAll"){
 		console.log("Run");
 		var startDate = req.param("startDate");
 		var teamNo = req.param("teamNo");
-		var sql = "select * from input_customs where startDate like'%"+startDate+"%' and (name like '%"+teamNo+"%' or empolyeeName like '%"+teamNo+"%' or carNo like '%"+teamNo+"')";
+		var ctype = req.param("ctype");
+		var sbtype = req.param("sbtype");
+		var sql = "select * from input_customs where startDate like'%"+startDate+"%' and ctype like'%"+ctype+"%'  and sbtype like'%"+sbtype+"%' and (name like '%"+teamNo+"%' or empolyeeName like '%"+teamNo+"%' or curiseName like '%"+teamNo+"%'  or dlname like '%"+teamNo+"%')";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -615,7 +646,16 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "getXVistor2"){
 		var roomNo = req.param("roomNo");
-		var sql = "select * from apply where name like '%"+roomNo+"%'";
+		var sql = "select * from apply where name like '%"+roomNo+"%' and type='供应商'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
+	}else if(sql == "getXVistor2dl"){
+		var roomNo = req.param("roomNo");
+		var sql = "select * from apply where name like '%"+roomNo+"%' and type='代理'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -646,9 +686,10 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "delTicketDoc2"){
 		var idlist = req.param("idlist");
+		var type = req.param("type");
 		var arr1 = idlist.split("*");
 		for(var i=0;i<arr1.length;i++){
-			var sql = "update apply set state = '审核通过',remark = '' where id = "+arr1[i];
+			var sql = "update apply set state"+type+" = '审核通过',remark = '' where id = "+arr1[i];
 			mysql.query(sql, function(err2, result2) {
 				if(err2) return console.error(err2.stack);
 			});
@@ -693,15 +734,33 @@ exports.servicedo = function(req,res){
 			if(err2) return console.error(err2.stack);
 			res.send(result2);
 		});	
-	}else if(sql == "cancelMaterial"){
+	}else if(sql == "cancelMaterial1"){
 		var code = req.param("code");
+		var cname = req.param("cname");
+		var startDate = req.param("startDate");
 		var arr1 = code.split("@");
 		/*状态已核销*/
 		/*记录车辆进港数据*/
-		var sql1 = "update input_customs set state = '已核销' where input_number = '"+arr1[0]+"' and carNo = '"+arr1[1]+"'";
+		var sql1 = "update input_customs set state = '进港已核销' where input_number = '"+arr1[0]+"' and carNo = '"+arr1[1]+"'";
 		mysql.query(sql1, function(err1, result1) {
 			if(err1) return console.error(err2.stack);
-			var sql2 = "insert into carlist(carNo,time) values('"+arr1[1]+"',now())";
+			var sql2 = "update carlist set timein = now(),no_in = '"+cname+"' where startDate = '"+startDate+"' and carNo = '"+arr1[1]+"'";
+			mysql.query(sql2, function(err2, result2) {
+				if(err2) return console.error(err2.stack);
+				res.send("200");
+			});
+		});	
+	}else if(sql == "cancelMaterial2"){
+		var code = req.param("code");
+		var cname = req.param("cname");
+		var startDate = req.param("startDate");
+		var arr1 = code.split("@");
+		/*状态已核销*/
+		/*记录车辆进港数据*/
+		var sql1 = "update input_customs set state = '出港已核销' where input_number = '"+arr1[0]+"' and carNo = '"+arr1[1]+"'";
+		mysql.query(sql1, function(err1, result1) {
+			if(err1) return console.error(err2.stack);
+			var sql2 = "update carlist set timeout = now(),no_out = '"+cname+"' where startDate = '"+startDate+"' and carNo = '"+arr1[1]+"'";
 			mysql.query(sql2, function(err2, result2) {
 				if(err2) return console.error(err2.stack);
 				res.send("200");
@@ -721,6 +780,13 @@ exports.servicedo = function(req,res){
 			if(err2) return console.error(err2.stack);
 			res.send("200");
 		});	
+	}else if(sql == "delXQ"){
+		var id = req.param("id");
+		var sql = "delete from xieqin where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
 	}else if(sql == "HGPass"){
 		var id = req.param("id");
 		var sql = "update input_form set state = '海关已审核' where id ="+id;
@@ -728,9 +794,26 @@ exports.servicedo = function(req,res){
 			if(err2) return console.error(err2.stack);
 			res.send("200");
 		});	
+	}else if(sql == "checkXQ"){
+		var no = req.param("no");
+		var tel = req.param("tel");
+		var sql = "select * from xieqin where no = '"+no+"' and tel = '"+tel+"'";
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});	
 	}else if(sql == "YLGPass"){
 		var id = req.param("id");
 		var sql = "update input_form set state = '邮轮港已审核' where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
+	}else if(sql == "addXQ"){
+		var no = req.param("no");
+		var name = req.param("name");
+		var tel = req.param("tel");
+		var sql = "insert into xieqin(no,name,tel) values('"+no+"','"+name+"','"+tel+"');";
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send("200");
@@ -754,15 +837,16 @@ exports.servicedo = function(req,res){
 		var username = req.param("username");
 		var password = req.param("password");
 		var company = req.param("company");
-		if(company == '供应商'){
-			var Sql = "select * from apply where name = '"+username+"'";
+		if(company == '供应商' || company == '代理'){
+			var Sql = "select * from apply where name = '"+username+"' and type = '"+company+"'";
 		    mysql.query(Sql ,function(error,obj){
 		          if(error){console.log(error);res.send("400");return false;}
 		          if(obj[0]){
 		          	  if(obj[0].ftel == password){
 		                  res.send({
 		                  	username:username,
-		                  	company:company
+		                  	company:company,
+		                  	state:obj[0].state
 		                  });
 			          }else{
 			              res.send("400");
@@ -945,8 +1029,9 @@ exports.uploaddo2 = function(req, res) {
 	var fname1 = req.body.fname;
 	var ftel = req.body.ftel;
 	var fadd = req.body.fadd;
+	var type = req.body.type;
 	var fname = req.files.img_url.path.replace("public\\upload\\", "").replace("public/upload/", "");
-	var sql = "insert into apply(name,image,state,fname,ftel,fadd) values('"+username+"','"+fname+"','待审核','"+fname1+"','"+ftel+"','"+fadd+"')";
+	var sql = "insert into apply(name,image,state,fname,ftel,fadd,type) values('"+username+"','"+fname+"','待审核','"+fname1+"','"+ftel+"','"+fadd+"','"+type+"')";
 	mysql.query(sql, function(err, result) {
 		if(err) return console.error(err.stack);
 		res.redirect("/customs/page/regsuccess.html");
@@ -982,8 +1067,11 @@ exports.uploaddo = function(req, res) {
 	var startDate = req.body.startDate;
 	var curiseName = req.body.curiseName;
 	var input_number = req.body.input_number;
+	var ctype = req.body.ctype;
+    var dlname = req.body.dlname;
+    var sbtype = req.body.sbtype;
 	/*解析数据生成记录*/
-	var sql1 = "select name from apply where state ='审核通过'";
+	var sql1 = "select name from apply where state ='审核通过' and state1 ='审核通过'";
 	mysql.query(sql1, function(err, result1) {
 		if(err) return console.error(err.stack);
 		var gyslist = '';
@@ -1014,6 +1102,7 @@ exports.uploaddo = function(req, res) {
 		}
 
 		//var data = [];
+		var carlist = '';
 		for(var i in excelObj){
 			    var arr=[];
 			    var value=excelObj[i];
@@ -1021,11 +1110,21 @@ exports.uploaddo = function(req, res) {
 			    	for(var j in value){
 				        arr.push(value[j]);
 				    }
-				    var sql = "insert into input_customs(no,name,nameEn,unit,price,empolyeeName,carNo,input_number,startDate,curiseName) values ('"+arr[0]+"','"+arr[1]+"','"+arr[2]+"','"+arr[3]+"','"+arr[4]+"','"+arr[5]+"','"+arr[6]+"','"+input_number+"','"+startDate+"','"+curiseName+"')";
+				    var sql = "insert into input_customs(no,name,nameEn,unit,price,empolyeeName,carNo,input_number,startDate,curiseName,ctype,dlname,sbtype) values ('"+arr[0]+"','"+arr[1]+"','"+arr[2]+"','"+arr[3]+"','"+arr[4]+"','"+arr[5]+"','"+arr[6]+"','"+input_number+"','"+startDate+"','"+curiseName+"','"+ctype+"','"+dlname+"','"+sbtype+"')";
 					console.log(sql);
 					mysql.query(sql, function(err, result) {
 						if(err) return console.error(err.stack);
 					});
+					if(carlist.indexOf(arr[6]) == -1){
+						carlist = carlist + ";" + arr[6];
+						//插入车牌记录
+						var sqlA = "insert into carlist(carNo,startDate,timedl) values('"+arr[6]+"','"+startDate+"',now());";
+						console.log(sqlA);
+						mysql.query(sqlA, function(err, resultA) {
+							if(err) return console.error(err.stack);
+						});
+					}
+					
 			    }
 			    
 			    //data.push(arr);

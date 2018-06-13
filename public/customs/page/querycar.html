@@ -91,7 +91,8 @@
 					url: "/service/getCar",
 					data: {
 						startDate:$("#startDate").val(),
-						carNo:$("#carNo").val()
+						carNo:$("#carNo").val(),
+						ctype:$("#ctype").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -103,7 +104,14 @@
 							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
 						
 							json_tbody += '<td>'+data[i].carNo+'</td>';
-							json_tbody += '<td>'+data[i].time+'</td>';
+							json_tbody += '<td>'+data[i].startDate+'</td>';
+							json_tbody += '<td>'+data[i].timedl+'</td>';
+							json_tbody += '<td>'+data[i].timein+'</td>';
+							json_tbody += '<td>'+data[i].no_in+'</td>';
+							json_tbody += '<td>'+data[i].timeout+'</td>';
+							
+							
+							json_tbody += '<td>'+data[i].no_out+'</td>';
 							
 						
 							
@@ -391,8 +399,13 @@
 						</div>
 						
 						<div style="margin-left:30px">
-					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="进港日期" data-am-datepicker readonly />
+					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="作业日期" data-am-datepicker readonly />
 					      	<input type="" id="carNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="车牌号" >
+					      	<select id="ctype" name="ctype" style="width:200px;height:40px" >
+					 						  <option value="">全部</option>
+											  <option value="1">进港日期空</option>
+											  <option value="2">出港日期空</option>
+											</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
@@ -407,7 +420,12 @@
 												<tr>
 													<!--<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>-->
 													<th>车牌号</th>
+													<th>作业时间</th>
+													<th>代理申报时间</th>
 													<th>进港时间</th>
+													<th>进港操作协勤员</th>
+													<th>出港时间</th>
+													<th>出港操作协勤员</th>
 												</tr>
 											</thead>
 											<tbody id="json_tbody">

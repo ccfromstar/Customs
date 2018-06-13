@@ -17,23 +17,40 @@
 
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 			$(function(){
-				var url = window.location.href;
-				if(url.indexOf("?id=")!=-1){
-					var arr1 = url.split("?id=");
-					$.ajax({
+				$.ajax({
 						type: "post",
-						url: "/service/getDocByKey",
+						url: "/service/getShip",
 						data: {
-							id:arr1[1]
+							
 						},
-						success: function(data) {
-							$("#startDate").val(data[0].startDate);
-							$("#curiseName").val(data[0].tools);
-							$("#ctype").val(data[0].ctype);
-							$("#input_number").val(data[0].number);
+						success: function(data1) {
+							var h = '';
+							for(var i in data1){
+								h = h + "<option value='"+data1[i].name+"'>"+data1[i].name+"</option>";
+							}
+							$("#curiseName").html(h);
+							var url = window.location.href;
+							if(url.indexOf("?id=")!=-1){
+								var arr1 = url.split("?id=");
+								$.ajax({
+									type: "post",
+									url: "/service/getDocByKey",
+									data: {
+										id:arr1[1]
+									},
+									success: function(data) {
+										$("#startDate").val(data[0].startDate);
+										$("#curiseName").val(data[0].tools);
+										$("#ctype").val(data[0].ctype);
+										$("#sbtype").val(data[0].sbtype);
+										$("#input_number").val(data[0].number);
+										$("#bgd_number").val(data[0].bgd_number);
+									}
+								});
+							}
 						}
-					});
-				}
+				});
+				
 			});
 
 			var lineId = '';
@@ -92,6 +109,10 @@
 			}
 
 			function submitDoc(){
+				var bgd_number = $("#bgd_number").val();
+				if(bgd_number.length != 18){
+					alert("报关单号必须是18位！");return false;
+				}
 				var url = window.location.href;
 				var arr1 = url.split("?id=");
 				var isEdit = 0;
@@ -106,8 +127,11 @@
 						tools:$("#curiseName").val(),
 						number:$("#input_number").val(),
 						ctype:$("#ctype").val(),
+						sbtype:$("#sbtype").val(),
 						hasBGD:1,
-						isEdit:isEdit
+						isEdit:isEdit,
+						dlname:sessionStorage.username,
+						bgd_number:$('#bgd_number').val()
 					},
 					success: function(data) {
 						alert("提交成功");
@@ -163,10 +187,7 @@
 										<td>运输工具</td>
 										<td>
 											<select id="curiseName" name="curiseName" style="width:200px" >
-											  <option value="歌诗达赛琳娜号">歌诗达赛琳娜号</option>
-											  <option value="诺唯真喜悦号">诺唯真喜悦号</option>
-											  <option value="皇家海洋量子号">皇家海洋量子号</option>
-											  <option value="天海新世纪号">天海新世纪号</option>
+											  
 											</select>
 										</td>
 									</tr>
@@ -180,14 +201,30 @@
 										</td>
 									</tr>
 									<tr>
-										<td>录入编号</td>
+										<td>申报海关</td>
+										<td>
+											<select id="sbtype" name="sbtype" style="width:200px" >
+											  <option value="吴淞">吴淞</option>
+											  <option value="业务三处">业务三处</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>起卸单号</td>
 										<td>
 											<input type="" id="input_number" name="input_number" class="am-form-field">
 										</td>
 									</tr>
 									<tr>
+										<td>报关单号</td>
+										<td>
+											<input type="" id="bgd_number" name="bgd_number" class="am-form-field">
+										</td>
+									</tr>
+									<tr>
 										<td>数据Excel表导入</td>
 										<td>
+											<a target="_blank" href="../framework/mb.xlsx">材料导入模板表格下载</a>
 											<iframe frameborder=0 src="/upload" style="width:550px;height:60px"></iframe>
 										</td>
 									</tr>

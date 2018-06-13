@@ -102,9 +102,12 @@
 								hasBGD = "特殊车辆";
 							}
 							json_tbody += '<td>'+hasBGD+'</td>';
+							json_tbody += '<td>'+data[i].dlname+'</td>';
 							json_tbody += '<td>'+data[i].startDate+'</td>';
 							json_tbody += '<td>'+data[i].tools+'</td>';
 							json_tbody += '<td>'+data[i].number+'</td>';
+							json_tbody += '<td>'+data[i].bgd_number+'</td>';
+							json_tbody += '<td>'+data[i].sbtype+'</td>';
 							json_tbody += '<td>'+data[i].ctype+'</td>';
 							json_tbody += '<td>'+data[i].numTotal+'</td>';
 							json_tbody += '<td>'+data[i].priceTotal+'</td>';
@@ -118,6 +121,9 @@
 							}
 							if(data[i].state == "待审核" || data[i].state == "驳回"){
 								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='editDoc(" + data[i].id + "," + data[i].hasBGD + ")'>编辑</button>";
+							}
+							if(data[i].state == "海关已审核"){
+								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='editDoc(" + data[i].id + "," + data[i].hasBGD + ")'>调整车牌号</button>";
 							}
 							json_tbody += '</td></tr>';
 							count +=1;
@@ -426,7 +432,7 @@
 					      	</select>
 					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
 					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
-					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="录入编号" >
+					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="起卸单号" >
 					      	<select id="s_state" style="height: 40px">
 					      		<option value="*">所有</option>
 					      		<option value="待审核">待审核</option>
@@ -449,9 +455,12 @@
 												<tr>
 													<!--<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>-->
 													<th>申报类型</th>
+													<th>代理名称</th>
 													<th>出航日期</th>
 													<th>运输工具</th>
-													<th>录入编号</th>
+													<th>起卸单号</th>
+													<th>报关单号</th>
+													<th>申报海关</th>
 													<th>添加/起卸</th>
 													<th>申报数量</th>
 													<th>金额（RMB）</th>

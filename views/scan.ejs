@@ -15,6 +15,8 @@
 	<body>
 		<script>
 			var code = '';
+			var cname = '';
+			var startDate = '';
 			wx.config({
 				debug: false,
 				appId: 'wx630bfbf8158108ec',
@@ -79,7 +81,10 @@
 									bookingno:no
 								},
 								success: function(data) {
-									var mlist = '<table class="am-table am-table-bordered am-table-radius am-table-striped">';
+									var mlist = '';
+									var arr1 = no.split("@");
+									mlist = mlist + '<p>车牌号：'+arr1[1]+'</p>';
+									mlist = mlist + '<table class="am-table am-table-bordered am-table-radius am-table-striped">';
 									mlist = mlist + '<tr><th>名称</th><th>重量</th><th>金额</th></tr>';
 									for(var i in data){
 										mlist = mlist + '<tr>';
@@ -87,6 +92,7 @@
 										mlist = mlist + '<td>'+data[i].unit+'</td>';
 										mlist = mlist + '<td>'+data[i].price+'</td>';
 										mlist = mlist + '</tr>';
+										startDate = data[i].startDate;
 									}
 									mlist += '</table>';
 									$("#mlist").html(mlist);
@@ -100,28 +106,86 @@
 				alert(res.errMsg);
 			});
 
-			function cancelMaterial(){
+			function cancelMaterial1(){
 				if(code == ""){
 					alert("请先扫描您要核销的车辆二维码");return false;
 				}
 							$.ajax({
 								type: "POST",
-								url: "/service/cancelMaterial",
+								url: "/service/cancelMaterial1",
 								data: {
-									code:code
+									code:code,
+									cname:cname,
+									startDate:startDate
 								},
 								success: function(data) {
 									alert("操作成功！");
 								}
 							});
 			}
+
+			function cancelMaterial2(){
+				if(code == ""){
+					alert("请先扫描您要核销的车辆二维码");return false;
+				}
+							$.ajax({
+								type: "POST",
+								url: "/service/cancelMaterial2",
+								data: {
+									code:code,
+									cname:cname,
+									startDate:startDate
+								},
+								success: function(data) {
+									alert("操作成功！");
+								}
+							});
+			}
+
+			function sumbitLogin(){
+				$.ajax({
+					type: "post",
+					url: "/service/checkXQ",
+					data: {
+						no:$("#no").val(),
+						tel:$("#tel").val()
+					},
+					success: function(data) {
+						console.log(data[0]);
+						if(data[0]){
+							$("#div1").css("display","none");
+							$("#div2").css("display","block");
+							$("#name1").html(data[0].name);
+							cname = data[0].name;
+						}else{
+							alert("登录失败！");
+						}
+					}
+				});
+			}
 		</script>
 		<style>
 
 		</style>
-		&nbsp;&nbsp;<button type="button" id="scanQRCode1" class="am-btn am-btn-default" style="margin-top:5px">扫描车辆通关二维码</button>
-		<div id="mlist"></div>
-		&nbsp;&nbsp;<button type="button" onclick="cancelMaterial()" class="am-btn am-btn-success" style="margin-top:5px">核销</button>
+		<form class="am-form" id="div1" >
+		  <fieldset>
+				<div class="am-form-group">
+					<input type="text" class="" id="no" placeholder="协勤编号">
+				</div>
+				<div class="am-form-group">
+					<input type="text" class="" id="tel" placeholder="协勤手机号">
+				</div>
+				<button type="button" class="am-btn am-btn-default" onclick="sumbitLogin()">登录</button>
+		  </fieldset>
+		</form>
+		<div id="div2" style="display:none">
+			<p style="margin-top: 20px">&nbsp;&nbsp;&nbsp;您好，<span id="name1"></span></p>
+			<p>&nbsp;&nbsp;<button type="button" id="scanQRCode1" class="am-btn am-btn-default" style="margin-top:5px">扫描车辆通关二维码</button></p>
+			<div id="mlist"></div>
+			<p>&nbsp;&nbsp;<button type="button" onclick="cancelMaterial1()" class="am-btn am-btn-success" style="margin-top:5px">进港核销</button></p>
+			<p>&nbsp;&nbsp;<button type="button" onclick="cancelMaterial2()" class="am-btn am-btn-success" style="margin-top:5px">出港核销</button></p>
+		</div>
+		
 	</body>
 
 </html>

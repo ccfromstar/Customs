@@ -39,7 +39,9 @@
   			</h1>
 		</header>
 
-		<form class="am-form">
+		
+
+		<form class="am-form" id="form2" >
 		  <fieldset>
 				<div class="am-form-group">
 					<input type="text" class="" id="carNo" placeholder="车牌号">
@@ -48,10 +50,17 @@
 				<button type="button" class="am-btn am-btn-default" onclick="sumbitDoc()">生成通关二维码</button>
 		  </fieldset>
 		</form>
+		<div style="margin-left:10px" id="totallist"></div>
 		<div style="margin-left:10px" id="codelist"></div>
 		<div class="am-alert am-alert-success none successinfo" data-am-alert>
 		</div>
 		<script>
+			function sumbitLogin(){
+				if($("#uName").val()==""){
+						
+				}
+			}
+
 			function sumbitDoc(){
 				$.ajax({
 					type: "post",
@@ -64,8 +73,10 @@
 							alert("没有查找到信息！");$("#codelist").html("");return false;
 						}
 						var codelist = "";
+						var total = 0;
 						$("#codelist").html("");
 						for(var i in data){
+							total = total + 1;
 							codelist = '<p>录入编号:'+data[i].input_number+'</p><div id="code'+i+'"></div>';
 							$("#codelist").append(codelist);
 							$("#code"+i).qrcode({
@@ -75,6 +86,7 @@
 								text: data[i].input_number+"@"+$("#carNo").val() //任意内容
 							});
 						}
+						$("#totallist").html("总生成二维码数为："+total);
 					}
 				});
 			}
