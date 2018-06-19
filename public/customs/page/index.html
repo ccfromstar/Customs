@@ -70,7 +70,7 @@
 					},
 					success: function(data) {
 						if(data == ""){
-							alert("没有查找到信息！");$("#codelist").html("");return false;
+							alert("没有查找到信息！");$("#codelist").html("");$("#totallist").html("总生成二维码数为：0");return false;
 						}
 						var codelist = "";
 						var total = 0;

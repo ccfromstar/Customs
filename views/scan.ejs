@@ -163,6 +163,20 @@
 					}
 				});
 			}
+
+			function submitRdoc(){
+				$.ajax({
+					type: "post",
+					url: "/service/createReturn",
+					data: {
+						remark:$("#remark").val(),
+						name:cname
+					},
+					success: function(data) {
+						alert("提交成功！");
+					}
+				});
+			}
 		</script>
 		<style>
 
@@ -184,6 +198,10 @@
 			<div id="mlist"></div>
 			<p>&nbsp;&nbsp;<button type="button" onclick="cancelMaterial1()" class="am-btn am-btn-success" style="margin-top:5px">进港核销</button></p>
 			<p>&nbsp;&nbsp;<button type="button" onclick="cancelMaterial2()" class="am-btn am-btn-success" style="margin-top:5px">出港核销</button></p>
+			<hr>
+			<h5>&nbsp;&nbsp;退货申请单</h5>
+			<p>&nbsp;&nbsp;<textarea style="width:95%;" id="remark"></textarea></p>
+			<p>&nbsp;&nbsp;<button type="button" onclick="submitRdoc()" class="am-btn am-btn-default" style="margin-top:5px">提交</button></p>
 		</div>
 		
 	</body>

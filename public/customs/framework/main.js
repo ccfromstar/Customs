@@ -26,6 +26,7 @@ $(function(){
 		_html +='<li><a href="dl.html"><span class="am-icon-pencil-square-o"></span> 代理管理</a></li>';
 		_html +='<li><a href="gyshg.html"><span class="am-icon-pencil-square-o"></span> 供应商管理</a></li>';
 		_html +='<li><a href="xieqin.html"><span class="am-icon-pencil-square-o"></span> 协勤管理</a></li>';
+		_html +='<li><a href="return.html"><span class="am-icon-pencil-square-o"></span> 退货管理</a></li>';
 	}else if(sessionStorage.company == "供应商"){
 		_html +='<li><a href="gys_form.html"><span class="am-icon-pencil-square-o"></span> 信息管理</a></li>';
 	}

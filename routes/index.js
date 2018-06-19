@@ -547,6 +547,15 @@ exports.servicedo = function(req,res){
 			res.send(result2);
 		});
 		
+	}else if(sql == "createReturn"){
+		var remark = req.param("remark");
+		var name = req.param("name");
+		var sql = "insert into hg_return(name,time,remark,state) values('"+name+"',now(),'"+remark+"','待审核')";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			res.send("200");
+		});
+		
 	}else if(sql == "getXVistor"){
 		var startDate = req.param("startDate");
 		var teamNo = req.param("teamNo");
@@ -599,6 +608,15 @@ exports.servicedo = function(req,res){
 	}else if(sql == "getXQ"){
 		var txtName = req.param("txtName");
 		var sql = "select * from xieqin where name like '%"+txtName+"%'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+		
+	}else if(sql == "getReturn"){
+		var txtName = req.param("txtName");
+		var sql = "select * from hg_return where remark like '%"+txtName+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -720,7 +738,7 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "getCode"){
 		var carNo = req.param("carNo");
-		var sql = "select DISTINCT(input_number) from input_customs where state != '已核销' and carNo = '"+carNo+"'";
+		var sql = "select DISTINCT(input_number) from v_input_customs where state != '出港已核销' and docstate = '邮轮港已审核' and carNo = '"+carNo+"'";
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send(result2);
@@ -790,6 +808,13 @@ exports.servicedo = function(req,res){
 	}else if(sql == "HGPass"){
 		var id = req.param("id");
 		var sql = "update input_form set state = '海关已审核' where id ="+id;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send("200");
+		});	
+	}else if(sql == "ReturnPass"){
+		var id = req.param("id");
+		var sql = "update hg_return set state = '已审核' where id ="+id;
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send("200");
@@ -1016,6 +1041,7 @@ exports._uploaddo = function(req, res) {
 
 	for(var i=0;i<arr1.length;i++){
 		var sql = "insert into input_files(name,input_number) values('"+arr1[i]+"','"+input_number+"')";
+		console.log(sql);
 		mysql.query(sql, function(err, result) {
 			if(err) return console.error(err.stack);
 		});
@@ -1102,33 +1128,40 @@ exports.uploaddo = function(req, res) {
 		}
 
 		//var data = [];
-		var carlist = '';
-		for(var i in excelObj){
-			    var arr=[];
-			    var value=excelObj[i];
-			    if(i>0 && value[0]){
-			    	for(var j in value){
-				        arr.push(value[j]);
-				    }
-				    var sql = "insert into input_customs(no,name,nameEn,unit,price,empolyeeName,carNo,input_number,startDate,curiseName,ctype,dlname,sbtype) values ('"+arr[0]+"','"+arr[1]+"','"+arr[2]+"','"+arr[3]+"','"+arr[4]+"','"+arr[5]+"','"+arr[6]+"','"+input_number+"','"+startDate+"','"+curiseName+"','"+ctype+"','"+dlname+"','"+sbtype+"')";
-					console.log(sql);
-					mysql.query(sql, function(err, result) {
-						if(err) return console.error(err.stack);
-					});
-					if(carlist.indexOf(arr[6]) == -1){
-						carlist = carlist + ";" + arr[6];
-						//插入车牌记录
-						var sqlA = "insert into carlist(carNo,startDate,timedl) values('"+arr[6]+"','"+startDate+"',now());";
-						console.log(sqlA);
-						mysql.query(sqlA, function(err, resultA) {
+		//删除所有以前的材料
+		var sqlB = "delete from input_customs where input_number = '"+input_number+"'";
+		mysql.query(sqlB, function(err, resultB) {
+			if(err) return console.error(err.stack);
+			var carlist = '';
+			for(var i in excelObj){
+				    var arr=[];
+				    var value=excelObj[i];
+				    if(i>0 && value[0]){
+				    	for(var j in value){
+					        arr.push(value[j]);
+					    }
+					    var sql = "insert into input_customs(no,name,nameEn,unit,price,empolyeeName,carNo,input_number,startDate,curiseName,ctype,dlname,sbtype) values ('"+arr[0]+"','"+arr[1]+"','"+arr[2]+"','"+arr[3]+"','"+arr[4]+"','"+arr[5]+"','"+arr[6]+"','"+input_number+"','"+startDate+"','"+curiseName+"','"+ctype+"','"+dlname+"','"+sbtype+"')";
+						console.log(sql);
+						mysql.query(sql, function(err, result) {
 							if(err) return console.error(err.stack);
 						});
-					}
-					
-			    }
-			    
-			    //data.push(arr);
-		}
+						if(carlist.indexOf(arr[6]) == -1){
+							carlist = carlist + ";" + arr[6];
+							//插入车牌记录
+							var sqlA = "insert into carlist(carNo,startDate,timedl) values('"+arr[6]+"','"+startDate+"',now());";
+							console.log(sqlA);
+							mysql.query(sqlA, function(err, resultA) {
+								if(err) return console.error(err.stack);
+							});
+						}
+						
+				    }
+				    
+				    //data.push(arr);
+			}
+		});
+
+		
 		res.redirect("uploadsuccess?p=" + fname);
 
 	});
