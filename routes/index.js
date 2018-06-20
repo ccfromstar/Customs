@@ -725,6 +725,29 @@ exports.servicedo = function(req,res){
 		}
 		res.send("200");
 		
+	}else if(sql == "changecar"){
+		var inputnumber = req.param("inputnumber");
+		var oldcarno = req.param("oldcarno");
+		var newcarno = req.param("newcarno");
+
+		var sql = "update input_customs set carNo='"+newcarno+"' where carNo = '"+oldcarno+"'";
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			//插入变更记录
+			var sql1 = "insert into car_changelist(oldcarno,newcarno,inputnumber,time) values('"+oldcarno+"','"+newcarno+"','"+inputnumber+"',now())";
+			mysql.query(sql1, function(err1, result1) {
+				if(err1) return console.error(err1.stack);
+				//变更文档状态
+				var sql3 = "update input_form set state = '待审核' where number = '"+inputnumber+"'";
+				mysql.query(sql3, function(err3, result3) {
+					if(err3) return console.error(err3.stack);
+					
+					res.send("200");
+				});
+			});
+		});
+		
+		
 	}else if(sql == "ApproveDoc1"){
 		var idlist = req.param("idlist");
 		var arr1 = idlist.split("*");
@@ -823,6 +846,14 @@ exports.servicedo = function(req,res){
 		var no = req.param("no");
 		var tel = req.param("tel");
 		var sql = "select * from xieqin where no = '"+no+"' and tel = '"+tel+"'";
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});	
+	}else if(sql == "getChange"){
+		var no = req.param("no");
+		var sql = "select * from car_changelist where inputnumber = '"+no+"'";
+		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
 			res.send(result2);

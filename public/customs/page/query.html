@@ -85,6 +85,30 @@
 
 				var url = window.location.href;
 				var arr1 = url.split("?id=");
+
+				//获取变更记录
+				$.ajax({
+					type: "post",
+					url: "/service/getChange",
+					data: {
+						no:arr1[1]
+					},
+					success: function(data) {
+						var json_tbody = '';
+						var count = 0;
+						for(var i in data){
+							json_tbody += '<tr>';
+							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
+							json_tbody += '<td>'+data[i].oldcarno+'</td>';
+							json_tbody += '<td>'+data[i].newcarno+'</td>';
+							json_tbody += '<td>'+data[i].time+'</td>';
+							//json_tbody += '<td>'+data[i].unit+'</td>';
+							count +=1;
+						}
+						$("#json_tbody1").html(json_tbody);
+						$("#total1").html(count);
+					}
+				});
 				
 				$.ajax({
 					type: "post",
@@ -402,6 +426,21 @@
 											<td><span id="num3">-</span> 辆</td>
 										</tr>
 									</table>
+
+									<table class="am-table am-table-striped am-table-hover table-main jdt-table" >
+											<thead>
+												<tr>
+													
+													<th>旧车牌</th>
+													<th>新车牌</th>
+													<th>变更时间</th>
+
+												</tr>
+											</thead>
+											<tbody id="json_tbody1">
+												
+											</tbody>
+										</table>
 								</div>
 							<div class="am-g">
 								<div class="am-u-sm-7">
