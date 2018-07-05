@@ -96,6 +96,7 @@
 											  <option value="业务三处">业务三处</option>
 											</select>
 					      	<button type="button" @click="search" class="btn-c am-btn am-btn-primary am-btn">检索</button>
+					      	<button type="button" @click="toExcel" class="btn-c am-btn am-btn-primary am-btn">导出Excel</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
 					      </div>
@@ -122,6 +123,7 @@
 												<tr>
 													
 													<th>序号</th>
+													<th>申报类型</th>
 													<th>日期</th>
 													<th>运输工具</th>
 													<th>商品名称</th>
@@ -138,6 +140,7 @@
 											<tbody  id="json_tbody">
 													<tr v-for="item in items">
 														<td>{{ item.id }}</td>
+														<td>{{ item.hasBGD }}</td>
 														<td>{{ item.startDate }}</td>
 														<td>{{ item.curiseName }}</td>
 														<td>{{ item.name }}</td>
@@ -351,6 +354,20 @@
 							  .catch(function (error) {
 							    console.log(error);
 							  });
+						},toExcel:function(){
+							$.ajax({
+								type: "POST",
+								url: "/service/toExcelputin",
+								data: {
+									startDate:$('#startDate').val(),
+									teamNo:$('#teamNo').val(),
+									ctype:$('#ctype').val(),
+									sbtype:$('#sbtype').val()
+								},
+								success: function(data) {
+									window.open("/excelop/temp/" + data);
+								}
+							});		
 						}
 					}
 				})

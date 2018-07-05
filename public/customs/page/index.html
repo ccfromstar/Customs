@@ -69,6 +69,7 @@
 						carNo:$("#carNo").val()
 					},
 					success: function(data) {
+						console.log(data);
 						if(data == ""){
 							alert("没有查找到信息！");$("#codelist").html("");$("#totallist").html("总生成二维码数为：0");return false;
 						}
@@ -77,7 +78,7 @@
 						$("#codelist").html("");
 						for(var i in data){
 							total = total + 1;
-							codelist = '<p>录入编号:'+data[i].input_number+'</p><div id="code'+i+'"></div>';
+							codelist = '<hr/><p>录入编号:'+data[i].input_number+'</p><p>船名:'+data[i].curiseName+'</p><div id="code'+i+'"></div>';
 							$("#codelist").append(codelist);
 							$("#code"+i).qrcode({
 								render: "table", //table方式

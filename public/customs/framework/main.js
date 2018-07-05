@@ -18,7 +18,7 @@ $(function(){
 	}else if(sessionStorage.company == "邮轮港"){
 		_html +='<li><a href="queryylg.html"><span class="am-icon-pencil-square-o"></span> 作业审核</a></li>';
 		_html +='<li><a href="gys.html"><span class="am-icon-pencil-square-o"></span> 供应商管理</a></li>';
-		_html +='<li><a href="statistical.html"><span class="am-icon-pencil-square-o"></span> 统计管理</a></li>';
+		_html +='<li><a href="tjylg.html"><span class="am-icon-pencil-square-o"></span> 统计管理</a></li>';
 	}else if(sessionStorage.company == "海关"){
 		_html +='<li><a href="queryhg.html"><span class="am-icon-pencil-square-o"></span> 报关审核</a></li>';
 		_html +='<li><a href="querycar.html"><span class="am-icon-pencil-square-o"></span> 车辆进出港管理</a></li>';

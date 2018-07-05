@@ -88,49 +88,56 @@
 				
 				$.ajax({
 					type: "post",
-					url: "/service/getCar",
+					url: "/service/getXVistor",
 					data: {
 						startDate:$("#startDate").val(),
-						carNo:$("#carNo").val(),
-						ctype:$("#ctype").val()
+						teamNo:$("#teamNo").val(),
+						roomNo:$("#roomNo").val(),
+						sType:$("#stype").val(),
+						s_state:$("#s_state").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
 						var json_tbody = '';
 						$modal.modal('toggle');
 						var count = 0;
+						var xh = 1;
+						var num1=0,num2=0,num3=0;
 						for(var i in data){
 							json_tbody += '<tr>';
 							//json_tbody += '<td><input type="checkbox" name="idlist" value="'+data[i].id+'"></td>';
-						
-							json_tbody += '<td>'+data[i].carNo+'</td>';
-							json_tbody += '<td>'+data[i].input_number+'</td>';
-							json_tbody += '<td>'+data[i].tools+'</td>';
+							
+							json_tbody += '<td>'+xh+'</td>';
 							json_tbody += '<td>'+data[i].startDate+'</td>';
-							json_tbody += '<td>'+data[i].timedl+'</td>';
-							json_tbody += '<td>'+data[i].timein+'</td>';
-							json_tbody += '<td>'+data[i].no_in+'</td>';
-							json_tbody += '<td>'+data[i].timeout+'</td>';
+							json_tbody += '<td>'+data[i].tools+'</td>';
+							json_tbody += '<td>'+data[i].dlname+'</td>';
+							
+							json_tbody += '<td>'+data[i].numTotal+'</td>';
+							json_tbody += '<td>'+data[i].priceTotal+'</td>';
+							
+							json_tbody += '<td>'+data[i].carnum+'</td>';
 							
 							
-							json_tbody += '<td>'+data[i].no_out+'</td>';
-							
-						
-							
-						
 							json_tbody += '</tr>';
 							count +=1;
+							xh++;
+							num1 += Number(data[i].numTotal);
+							num2 += Number(data[i].priceTotal);
+							num3 += Number(data[i].carnum);	
 						}
+						$("#num1").html(num1);
+						$("#num2").html(num2);
+						$("#num3").html(num3);
 						$("#total").html(count);
 						$("#json_tbody").html(json_tbody);
 					}
 				});
 			}
 
-			function HGPass(id){
+			function YLGPass(id){
 				$.ajax({
 					type: "post",
-					url: "/service/HGPass",
+					url: "/service/YLGPass",
 					data: {
 						id:id
 					},
@@ -397,23 +404,70 @@
 					<div class="admin-content-body">
 						
 						<div class="am-cf am-padding">
-							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">车辆进出港管理</strong> / <small>列表</small></div>
+							<div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">统计管理</strong> / <small>列表</small></div>
 						</div>
-						
-						<div style="margin-left:30px">
-					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="作业日期" data-am-datepicker readonly />
-					      	<input type="" id="carNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="车牌号" >
-					      	<select id="ctype" name="ctype" style="width:200px;height:40px" >
-					 						  <option value="">全部</option>
-											  <option value="1">进港日期空</option>
-											  <option value="2">出港日期空</option>
-											</select>
+						<!--
+						<div class="am-g">
+							<div class="am-u-sm-12 am-u-md-6">
+					          <div class="am-btn-toolbar">
+					            <div class="am-btn-group am-btn-group-xs">
+					              <button type="button" class="am-btn am-btn-default"><span class="am-icon-plus"></span> 新增游客</button>
+					            </div>
+					          </div>
+					        </div>
+					        <div class="am-u-sm-12 am-u-md-3">
+					          <div class="am-form-group">
+					           		<select style="display:inline;width:200px;">
+										<option>2017-12-06 盛世公主号</option>
+										<option>2017-12-06 赛琳娜号</option>
+									</select>
+					          </div>
+					        </div>
+					        <div class="am-u-sm-12 am-u-md-3">
+					          <div class="am-input-group am-input-group-sm">
+					            <input type="text" class="am-form-field" placeholder="姓名，护照号">
+					          <span class="am-input-group-btn">
+					            <button class="am-btn am-btn-default" type="button">搜索</button>
+					          </span>
+					          </div>
+					        </div>
+					      </div>-->
+
+					      <div style="margin-left:30px">
+					      	<select id="stype" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="1">有报关单</option>
+					      		<option value="0">无报关单</option>
+					      		<option value="2">特殊车辆</option>
+					      	</select>
+					      	<input type="text" id="startDate" class="am-form-field" style="width:120px;display: inline-block;" placeholder="启航日期" data-am-datepicker readonly />
+					      	<input type="" id="teamNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="运输工具" >
+					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="起卸单号" >
+					      	<select id="s_state" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="待审核">待审核</option>
+					      		<option value="已删除">已删除</option>
+					      		<option value="驳回">驳回</option>
+					      		<option value="海关已审核">海关已审核</option>
+					      		<option value="邮轮港已审核">邮轮港已审核</option>
+					      	</select>
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量删除</button>
 					      	<button type="button" onclick="ApproveDoc()" class="btn-c am-btn am-btn-success am-btn">审核</button>-->
 					      </div>
 
-
+					      <div class="am-u-sm-6">
+									<table style="margin-left:10px;margin-top: 10px;" class="am-table am-table-bordered">
+										<tr>
+											<td>累计重量</td>
+											<td><span id="num1">0</span> KG</td>
+											<td>累计金额</td>
+											<td><span id="num2">0</span> 元</td>
+											<td>累计车辆数</td>
+											<td><span id="num3">0</span> 辆</td>
+										</tr>
+									</table>
+								</div>
 							<div class="am-g">
 								<div class="am-u-sm-12">
 									<form class="am-form">
@@ -421,15 +475,13 @@
 											<thead>
 												<tr>
 													<!--<th><input type="checkbox" name="idlistall" onclick="changeState()" value="1">全选</th>-->
-													<th>车牌号</th>
-													<th>起卸单号</th>
+													<th>序号</th>
+													<th>出航日期</th>
 													<th>运输工具</th>
-													<th>作业时间</th>
-													<th>代理申报时间</th>
-													<th>进港时间</th>
-													<th>进港操作协勤员</th>
-													<th>出港时间</th>
-													<th>出港操作协勤员</th>
+													<th>代理名称</th>
+													<th>申报数量</th>
+													<th>金额（RMB）</th>
+													<th>车辆数</th>
 												</tr>
 											</thead>
 											<tbody id="json_tbody">
@@ -447,8 +499,6 @@
 									</form>
 								</div>
 							</div>
-
-
 							<div class="am-modal am-modal-confirm" tabindex="-1" id="del-confirm">
 								<div class="am-modal-dialog">
 									<div class="am-modal-hd">提示</div>
