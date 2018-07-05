@@ -83,7 +83,8 @@
 						teamNo:$("#teamNo").val(),
 						roomNo:$("#roomNo").val(),
 						sType:$("#stype").val(),
-						s_state:$("#s_state").val()
+						s_state:$("#s_state").val(),
+						dl:sessionStorage.username
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -122,7 +123,7 @@
 							if(data[i].state == "待审核" || data[i].state == "驳回"){
 								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='editDoc(" + data[i].id + "," + data[i].hasBGD + ")'>编辑</button>";
 							}
-							if(data[i].state == "海关已审核"){
+							if(data[i].state == "海关已审核" || data[i].state == "邮轮港已审核"){
 								json_tbody += " <button type='button' style='display:inline !important' class='am-btn am-btn-default am-btn-xs am-text-success am-hide-sm-only' onclick='referTo1(" + data[i].number + ")'>调整车牌号</button>";
 							}
 							json_tbody += '</td></tr>';

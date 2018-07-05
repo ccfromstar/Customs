@@ -51,9 +51,11 @@
 				});
 				
 				var isEdit = 0;
+				var url = window.location.href;
 				if(url.indexOf("?id=")!=-1){
 					isEdit = Number(arr1[1]);
 				}
+
 				if(isEdit == 0){
 					var d = new Date();
 					$("#input_number").val(Number(d));

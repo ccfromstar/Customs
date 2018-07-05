@@ -562,13 +562,19 @@ exports.servicedo = function(req,res){
 		var roomNo = req.param("roomNo");
 		var sType = req.param("sType");
 		var s_state = req.param("s_state");
+		var dl = req.param("dl");
+
+		if(!dl){
+			dl = '';
+		}
+
 		if(sType == "*"){
 			sType = "";
 		}
 		if(s_state == "*"){
 			s_state = "";
 		}
-		var sql = "select * from input_form where hasBGD like '%"+sType+"%' and state like '%"+s_state+"%' and tools like '%"+teamNo+"%' and number like '%"+roomNo+"%'  and startDate like '%"+startDate+"%'";
+		var sql = "select * from input_form where dlname like '%"+dl+"%' and hasBGD like '%"+sType+"%' and state like '%"+s_state+"%' and tools like '%"+teamNo+"%' and number like '%"+roomNo+"%'  and startDate like '%"+startDate+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -703,6 +709,14 @@ exports.servicedo = function(req,res){
 		res.send("200");
 		
 	}else if(sql == "delTicketDoc2"){
+		var idlist = req.param("idlist");
+		var sql = "update apply set state = '审核通过',remark = '' where id = "+idlist;
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+		});
+		res.send("200");
+		
+	}else if(sql == "delTicketDoc3"){
 		var idlist = req.param("idlist");
 		var type = req.param("type");
 		var arr1 = idlist.split("*");
