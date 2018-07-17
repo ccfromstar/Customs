@@ -18,6 +18,7 @@
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 
 			$(function(){
+				$("#s_state").val("待审核");
 				search();
 			});
 
@@ -103,7 +104,8 @@
 					data: {
 						startDate:$("#startDate").val(),
 						teamNo:$("#teamNo").val(),
-						roomNo:$("#roomNo").val()
+						roomNo:$("#roomNo").val(),
+						s_state:$("#s_state").val()
 					},
 					success: function(data) {
 						$("input[name='idlistall']").removeAttr("checked"); 
@@ -392,6 +394,12 @@
 					      </div>-->
 
 					      <div style="margin-left:30px">
+					      	<select id="s_state" style="height: 40px">
+					      		<option value="*">所有</option>
+					      		<option value="待审核">待审核</option>
+					      		<option value="审核通过">审核通过</option>
+					      		<option value="审核不通过">审核不通过</option>
+					      	</select>
 					      	<input type="" id="roomNo" class="am-form-field" style="width:120px;display: inline-block;" placeholder="代理名称" >
 					      	<button type="button" onclick="search()" class="btn-c am-btn am-btn-primary am-btn">检索</button>
 					      	<!--<button type="button" onclick="delDoc()" class="btn-c am-btn am-btn-default am-btn">批量审核</button>-->

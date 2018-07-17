@@ -27,12 +27,28 @@
 		</style>
 		<script type="text/javascript">
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
+			var namelist = "";
 			$(function() {
 				/*检测是否记住用户名密码*/
-			     
+			    $.ajax({
+					type: "POST",
+					url: "/service/getGName",
+					success: function(data) {
+						for(var i in data){
+							namelist = namelist + '@' + data[i].name;
+						} 
+					}
+				}); 
 			});
 			      
 			function reg1(){
+				var username = $("#username").val();
+				if(username == ""){
+		    		alert("供应商名称不能为空！");return false;
+		    	}
+				if(namelist.indexOf(username) != -1){
+					alert("供应商名称已经注册!不能重复注册！");return false;
+				}
 				if(document.all.img_url.value == ""){
 		    		alert("请选择您要上传的文件");return false;
 		    	}

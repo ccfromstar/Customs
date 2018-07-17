@@ -214,6 +214,27 @@ exports.servicedo = function(req,res){
 			if(err2) return console.error(err2.stack);
 			res.send(result2);
 		});
+	}else if(sql == "getBGDNumber") {
+		var sql = "select number from input_form";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+	}else if(sql == "getGName") {
+		var sql = "select name from apply where type = '供应商'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
+	}else if(sql == "getDName") {
+		var sql = "select name from apply where type = '代理'";
+		console.log(sql);
+		mysql.query(sql, function(err2, result2) {
+			if(err2) return console.error(err2.stack);
+			res.send(result2);
+		});
 	}else if(sql == "setNoPass") {
 		var id = req.param("id");
 		var remark = req.param("remark");
@@ -749,7 +770,8 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "getXVistor2"){
 		var roomNo = req.param("roomNo");
-		var sql = "select * from apply where name like '%"+roomNo+"%' and type='供应商'";
+		var s_state = req.param("s_state");
+		var sql = "select * from apply where name like '%"+roomNo+"%' and type='供应商' and state like '%"+s_state+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);
@@ -758,7 +780,8 @@ exports.servicedo = function(req,res){
 		
 	}else if(sql == "getXVistor2dl"){
 		var roomNo = req.param("roomNo");
-		var sql = "select * from apply where name like '%"+roomNo+"%' and type='代理'";
+		var s_state = req.param("s_state");
+		var sql = "select * from apply where name like '%"+roomNo+"%' and type='代理' and state like '%"+s_state+"%'";
 		console.log(sql);
 		mysql.query(sql, function(err2, result2) {
 			if(err2) return console.error(err2.stack);

@@ -14,7 +14,7 @@
 		<script src="../framework/main.js"></script>
 
 		<script type="text/javascript">
-
+			var namelist = "";
 			//window.location = 'http://47.98.123.211/cruise_ticket/page/login.html';
 			$(function(){
 				$.ajax({
@@ -49,7 +49,15 @@
 							}
 						}
 				});
-				
+				$.ajax({
+					type: "POST",
+					url: "/service/getBGDNumber",
+					success: function(data) {
+						for(var i in data){
+							namelist = namelist + '@' + data[i].number;
+						} 
+					}
+				});
 			});
 
 			var lineId = '';
@@ -108,6 +116,15 @@
 			}
 
 			function submitDoc(){
+				var input_number = $("#input_number").val();
+				
+				if(input_number == ""){
+					alert("起卸单号必填！");return false;
+				}
+				if(namelist.indexOf(input_number) != -1){
+					alert("起卸单号不能重复！");return false;
+				}
+				
 				var url = window.location.href;
 				var arr1 = url.split("?id=");
 				var isEdit = 0;
